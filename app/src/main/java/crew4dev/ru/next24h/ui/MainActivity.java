@@ -16,11 +16,14 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import crew4dev.ru.next24h.App;
+import crew4dev.ru.next24h.Constants;
+import crew4dev.ru.next24h.OnTaskListClickListener;
 import crew4dev.ru.next24h.R;
 import crew4dev.ru.next24h.TasksAdapter;
 import crew4dev.ru.next24h.data.TaskItem;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnTaskListClickListener {
 
     @BindView(R.id.workLayout)
     CoordinatorLayout workTable;
@@ -49,14 +52,10 @@ public class MainActivity extends AppCompatActivity {
         //Создаем RecyclerView
         RecyclerView recyclerView = workTable.findViewById(R.id.taskRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new TasksAdapter(this));
 
-        TasksAdapter adapter = (TasksAdapter) ((RecyclerView) workTable.findViewById(R.id.taskRecyclerView)).getAdapter();
-        if (adapter.getItemCount() > 0) {
-            adapter.clearItems();
-        }
-        adapter.setItems(taskList);
-        adapter.notifyDataSetChanged();
+        TasksAdapter adapter = new TasksAdapter(this);
+        adapter.setOnCollectGroupClickListener(this);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -64,6 +63,17 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TasksAdapter adapter = (TasksAdapter) ((RecyclerView) workTable.findViewById(R.id.taskRecyclerView)).getAdapter();
+        if (adapter.getItemCount() > 0) {
+            adapter.clearItems();
+        }
+        adapter.setItems(App.getTaskList());
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -79,5 +89,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean OnTaskListClick(TaskItem task, int selectedPos) {
+        Intent intent = new Intent(MainActivity.this, TaskDetailsActivity.class);
+        intent.putExtra(Constants.ID_PARAM, selectedPos);
+        startActivity(intent);
+        return true;
     }
 }

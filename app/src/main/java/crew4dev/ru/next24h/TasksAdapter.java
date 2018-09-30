@@ -21,17 +21,26 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
 
     private final List<TaskItem> taskList = new ArrayList<>();
     private final Context context;
+    private int selectedPos = 0;
+    private OnTaskListClickListener listener;
 
     public TasksAdapter(Context context) {
         this.context = context;
     }
+
+    private OnViewHolderClickListener holderClickListener = new OnViewHolderClickListener() {
+        @Override
+        public void OnViewHolderClick(int current) {
+            setSelectedPos(current);
+        }
+    };
 
     @NonNull
     @Override
     public TasksViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.task_row, parent, false);
-        return new TasksViewHolder(view);
+        return new TasksViewHolder(view, holderClickListener);
     }
 
     public void setItems(Collection<TaskItem> items) {
@@ -68,14 +77,32 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         notifyDataSetChanged();
     }
 
+    public void setOnCollectGroupClickListener(OnTaskListClickListener groupClickListener) {
+        listener = groupClickListener;
+    }
+
+    private void setSelectedPos(int selected) {
+        if (listener != null && taskList.size() > 0 && listener.OnTaskListClick(taskList.get(selected), selected)) {
+            //updateSelectedPos(selected);
+        }
+    }
+
     class TasksViewHolder extends RecyclerView.ViewHolder {
+        private View item;
         private final TextView taskTitle;
         private final CheckBox cbSelect;
 
-        public TasksViewHolder(@NonNull View itemView) {
+        public TasksViewHolder(@NonNull View itemView, final OnViewHolderClickListener clickListener) {
             super(itemView);
             this.taskTitle = itemView.findViewById(R.id.taskTitle);
             this.cbSelect = itemView.findViewById(R.id.checkBox);
+            item = itemView;
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickListener.OnViewHolderClick(getAdapterPosition());
+                }
+            });
         }
 
         void bind(TaskItem item) {
