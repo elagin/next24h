@@ -1,10 +1,15 @@
 package crew4dev.ru.next24h.data;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
+@Entity(tableName = "tasks")
 public class TaskItem {
 
+    @PrimaryKey(autoGenerate = true)
+    private long id;
     String title;
     String descr;
-
     boolean isComplete;
 
     public TaskItem(String title, String descr, boolean isComplete) {
@@ -35,5 +40,13 @@ public class TaskItem {
 
     public void setComplete() {
         isComplete = true;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

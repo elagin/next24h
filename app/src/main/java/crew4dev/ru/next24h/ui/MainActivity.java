@@ -11,24 +11,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import crew4dev.ru.next24h.App;
 import crew4dev.ru.next24h.Constants;
-import crew4dev.ru.next24h.OnTaskListClickListener;
 import crew4dev.ru.next24h.R;
-import crew4dev.ru.next24h.TasksAdapter;
 import crew4dev.ru.next24h.data.TaskItem;
 
 public class MainActivity extends AppCompatActivity implements OnTaskListClickListener {
 
     @BindView(R.id.workLayout)
     CoordinatorLayout workTable;
-
-    private static List<TaskItem> taskList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +38,6 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
             }
         });
 
-        taskList.add(new TaskItem("Завтрак", "Не забыть купить кашку", false));
-        taskList.add(new TaskItem("Иголочка", "Резинка, молнии", false));
-        taskList.add(new TaskItem("Масло", "Iponee", false));
-
-        //Создаем RecyclerView
         RecyclerView recyclerView = workTable.findViewById(R.id.taskRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -60,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -72,29 +59,23 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
         if (adapter.getItemCount() > 0) {
             adapter.clearItems();
         }
-        adapter.setItems(App.getTaskList());
+        adapter.setItems(App.db().tasks().getTasks());
         adapter.notifyDataSetChanged();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean OnTaskListClick(TaskItem task, int selectedPos) {
         Intent intent = new Intent(MainActivity.this, TaskDetailsActivity.class);
-        intent.putExtra(Constants.ID_PARAM, selectedPos);
+        intent.putExtra(Constants.ID_PARAM, task.getId());
         startActivity(intent);
         return true;
     }

@@ -92,4 +92,5 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="ok">OK</string>
+    <string name="delete">Удалить</string>
 </resources>

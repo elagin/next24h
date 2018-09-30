@@ -2,9 +2,12 @@ package crew4dev.ru.next24h.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,7 +24,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
     EditText editDetailsDescr;
 
     private TaskItem oldTaskItem;
-    private Integer taskId;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,50 +32,71 @@ public class TaskDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_task_details);
         ButterKnife.bind(this);
         if (getIntent().getExtras() != null && getIntent().getExtras().get(Constants.ID_PARAM) != null) {
-            taskId = getIntent().getIntExtra(Constants.ID_PARAM, 0);
-            if (App.getTaskList().size() > taskId) {
-                oldTaskItem = App.getTaskList().get(taskId);
+            Long taskId = getIntent().getLongExtra(Constants.ID_PARAM, 0);
+            oldTaskItem = App.db().tasks().getById(taskId);
+            if (oldTaskItem == null) {
+                Toast.makeText(this, "Задача не найдена", Toast.LENGTH_SHORT).show();
             }
         }
+
+        if (oldTaskItem != null) {
+            editDetailsTitle.setText(oldTaskItem.getTitle());
+            editDetailsDescr.setText(oldTaskItem.getDescr());
+        }
+
+        editDetailsTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                menu.findItem(R.id.task_save).setEnabled(s.length() > 0);
+            }
+        });
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_task_details, menu);
+        this.menu = menu;
+
+        if (oldTaskItem == null) {
+            menu.findItem(R.id.task_delete).setVisible(false);
+        }
+        menu.findItem(R.id.task_save).setEnabled(editDetailsTitle.getText().length() > 0);
         return true;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (oldTaskItem != null) {
-            editDetailsTitle.setText(oldTaskItem.getTitle());
-            editDetailsDescr.setText(oldTaskItem.getDescr());
-        }
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.task_save) {
             if (oldTaskItem != null) {
                 oldTaskItem.setTitle(editDetailsTitle.getText().toString());
                 oldTaskItem.setDescr(editDetailsDescr.getText().toString());
-                App.updateTask(taskId, oldTaskItem);
+                App.db().tasks().update(oldTaskItem);
             } else {
                 TaskItem taskItem = new TaskItem(editDetailsTitle.getText().toString(), editDetailsDescr.getText().toString(), false);
-                App.addTask(taskItem);
+                App.db().tasks().insert(taskItem);
             }
             finish();
-            return true;
+        } else if (id == R.id.task_delete) {
+            if (oldTaskItem != null) {
+                App.db().tasks().delete(oldTaskItem);
+                finish();
+            }
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

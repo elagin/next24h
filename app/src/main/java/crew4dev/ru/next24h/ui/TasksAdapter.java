@@ -1,4 +1,4 @@
-package crew4dev.ru.next24h;
+package crew4dev.ru.next24h.ui;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import crew4dev.ru.next24h.App;
+import crew4dev.ru.next24h.R;
 import crew4dev.ru.next24h.data.TaskItem;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHolder> {
@@ -50,15 +52,18 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
 
     @Override
     public void onBindViewHolder(@NonNull TasksViewHolder holder, final int position) {
-        if (taskList.get(position).isComplete()) {
+        final TaskItem item = taskList.get(position);
+        if (item.isComplete()) {
             holder.taskTitle.setTextColor(Color.rgb(0, 210, 0));
         }
         holder.bind(taskList.get(position));
+        holder.cbSelect.setChecked(item.isComplete());
         holder.cbSelect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(!taskList.get(position).isComplete()) {
-                    taskList.get(position).setComplete();
+                if (!item.isComplete()) {
+                    item.setComplete();
+                    App.db().tasks().update(item);
                     notifyDataSetChanged();
                 }
             }

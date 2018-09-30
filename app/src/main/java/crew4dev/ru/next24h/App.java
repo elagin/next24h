@@ -1,33 +1,26 @@
 package crew4dev.ru.next24h;
 
 import android.app.Application;
+import android.arch.persistence.room.Room;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import crew4dev.ru.next24h.data.TaskItem;
+import crew4dev.ru.next24h.data.LocalDatabase;
 
 public class App extends Application {
 
     private static App instance;
-    private static List<TaskItem> taskList;
+    private static LocalDatabase mDb;
 
-    public static void addTask(TaskItem task) {
-        taskList.add(task);
-    }
-
-    public static List<TaskItem> getTaskList() {
-        return taskList;
-    }
-
-    public static void updateTask(int id, TaskItem taskItem) {
-        taskList.set(id, taskItem);
+    public static LocalDatabase db() {
+        return instance.mDb;
     }
 
     @Override
     public void onCreate() {
         instance = this;
         super.onCreate();
-        taskList = new ArrayList<>();
+        mDb = Room.databaseBuilder(this, LocalDatabase.class, "local_db")
+                .allowMainThreadQueries()
+                .build();
+
     }
 }
