@@ -5,9 +5,12 @@ public class TaskItem {
     String title;
     String descr;
 
-    public TaskItem(String title, String descr) {
+    boolean isComplete;
+
+    public TaskItem(String title, String descr, boolean isComplete) {
         this.title = title;
         this.descr = descr;
+        this.isComplete = isComplete;
     }
 
     public String getTitle() {
@@ -24,5 +27,13 @@ public class TaskItem {
 
     public void setDescr(String descr) {
         this.descr = descr;
+    }
+
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    public void setComplete() {
+        isComplete = true;
     }
 }

@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,10 +40,20 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TasksViewHolder holder, int position) {
-        //if (taskList.get(position).isComplete()) {
-        //holder.taskTitle.setTextColor(Color.rgb(0, 210, 0));
+    public void onBindViewHolder(@NonNull TasksViewHolder holder, final int position) {
+        if (taskList.get(position).isComplete()) {
+            holder.taskTitle.setTextColor(Color.rgb(0, 210, 0));
+        }
         holder.bind(taskList.get(position));
+        holder.cbSelect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(!taskList.get(position).isComplete()) {
+                    taskList.get(position).setComplete();
+                    notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     @Override
@@ -58,10 +70,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
 
     class TasksViewHolder extends RecyclerView.ViewHolder {
         private final TextView taskTitle;
+        private final CheckBox cbSelect;
 
         public TasksViewHolder(@NonNull View itemView) {
             super(itemView);
             this.taskTitle = itemView.findViewById(R.id.taskTitle);
+            this.cbSelect = itemView.findViewById(R.id.checkBox);
         }
 
         void bind(TaskItem item) {

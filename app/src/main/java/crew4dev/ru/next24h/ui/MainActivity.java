@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        taskList.add(new TaskItem("Завтрак", "Не забыть купить кашку"));
-        taskList.add(new TaskItem("Иголочка", "Резинка, молнии"));
-        taskList.add(new TaskItem("Масло", "Iponee"));
+        taskList.add(new TaskItem("Завтрак", "Не забыть купить кашку", false));
+        taskList.add(new TaskItem("Иголочка", "Резинка, молнии", false));
+        taskList.add(new TaskItem("Масло", "Iponee", false));
 
         //Создаем RecyclerView
         RecyclerView recyclerView = workTable.findViewById(R.id.taskRecyclerView);
