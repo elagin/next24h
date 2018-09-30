@@ -1,4 +1,4 @@
-package crew4dev.ru.next24h;
+package crew4dev.ru.next24h.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,8 +16,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import crew4dev.ru.next24h.R;
+import crew4dev.ru.next24h.TasksAdapter;
 import crew4dev.ru.next24h.data.TaskItem;
-import crew4dev.ru.next24h.ui.TaskDetailsActivity;
 
 public class MainActivity extends AppCompatActivity {
 
