@@ -1,13 +1,22 @@
 package crew4dev.ru.next24h.ui;
 
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
+
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,9 +31,33 @@ public class TaskDetailsActivity extends AppCompatActivity {
     EditText editDetailsTitle;
     @BindView(R.id.editDetailsDescr)
     EditText editDetailsDescr;
+    @BindView(R.id.currentDateTime)
+    TextView remindTime;
+    @BindView(R.id.check_remind)
+    CheckBox checkRemind;
+    @BindView(R.id.timeButton)
+    ImageButton timeButton;
 
     private TaskItem oldTaskItem;
     private Menu menu;
+    TimePickerDialog.OnTimeSetListener t = new TimePickerDialog.OnTimeSetListener() {
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            remindTime.setText(hourOfDay + ":" + minute);
+        }
+    };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_task_details, menu);
+        this.menu = menu;
+
+        if (oldTaskItem == null) {
+            menu.findItem(R.id.task_delete).setVisible(false);
+        }
+        menu.findItem(R.id.task_save).setEnabled(editDetailsTitle.getText().length() > 0);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +75,11 @@ public class TaskDetailsActivity extends AppCompatActivity {
         if (oldTaskItem != null) {
             editDetailsTitle.setText(oldTaskItem.getTitle());
             editDetailsDescr.setText(oldTaskItem.getDescr());
+            checkRemind.setChecked(oldTaskItem.isRemind());
+            if (!checkRemind.isChecked()) {
+                remindTime.setEnabled(false);
+                timeButton.setEnabled(false);
+            }
         }
 
         editDetailsTitle.addTextChangedListener(new TextWatcher() {
@@ -58,25 +96,23 @@ public class TaskDetailsActivity extends AppCompatActivity {
             }
         });
 
+        checkRemind.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (checkRemind.isChecked()) {
+                    remindTime.setEnabled(true);
+                    timeButton.setEnabled(true);
+                    if (remindTime.getText().length() == 0) {
+                        setTime(checkRemind);
+                    }
+                } else {
+                    remindTime.setEnabled(false);
+                    timeButton.setEnabled(false);
+                }
+            }
+        });
+        setInitialDateTime();
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_task_details, menu);
-        this.menu = menu;
-
-        if (oldTaskItem == null) {
-            menu.findItem(R.id.task_delete).setVisible(false);
-        }
-        menu.findItem(R.id.task_save).setEnabled(editDetailsTitle.getText().length() > 0);
-        return true;
-    }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -85,6 +121,8 @@ public class TaskDetailsActivity extends AppCompatActivity {
             if (oldTaskItem != null) {
                 oldTaskItem.setTitle(editDetailsTitle.getText().toString());
                 oldTaskItem.setDescr(editDetailsDescr.getText().toString());
+                oldTaskItem.setRemind(checkRemind.isChecked());
+                oldTaskItem.setTime(remindTime.getText().toString());
                 App.db().tasks().update(oldTaskItem);
             } else {
                 TaskItem taskItem = new TaskItem(editDetailsTitle.getText().toString(), editDetailsDescr.getText().toString(), false);
@@ -98,5 +136,30 @@ public class TaskDetailsActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setTime(View v) {
+        String time = remindTime.getText().toString();
+        if (time != null) {
+            String timeArray[] = time.split(":");
+            if (timeArray.length == 2) {
+                new TimePickerDialog(this, t,
+                        Integer.valueOf(timeArray[0]),
+                        Integer.valueOf(timeArray[1]), true)
+                        .show();
+                return;
+            }
+        }
+        Calendar dateAndTime = Calendar.getInstance();
+        new TimePickerDialog(this, t,
+                dateAndTime.get(Calendar.HOUR_OF_DAY),
+                dateAndTime.get(Calendar.MINUTE), true)
+                .show();
+        return;
+    }
+
+    private void setInitialDateTime() {
+        if (oldTaskItem.getTime() != null)
+            remindTime.setText(oldTaskItem.getTime());
     }
 }

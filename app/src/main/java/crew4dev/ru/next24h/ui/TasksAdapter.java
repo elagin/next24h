@@ -61,11 +61,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         holder.cbSelect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!item.isComplete()) {
-                    item.setComplete();
-                    App.db().tasks().update(item);
-                    notifyDataSetChanged();
-                }
+                item.setComplete(isChecked);
+                App.db().tasks().update(item);
+                notifyDataSetChanged();
             }
         });
     }

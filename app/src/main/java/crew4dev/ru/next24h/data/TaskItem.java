@@ -11,11 +11,14 @@ public class TaskItem {
     String title;
     String descr;
     boolean isComplete;
+    String time;
+    boolean isRemind;
 
     public TaskItem(String title, String descr, boolean isComplete) {
         this.title = title;
         this.descr = descr;
         this.isComplete = isComplete;
+        this.isRemind = false;
     }
 
     public String getTitle() {
@@ -38,8 +41,8 @@ public class TaskItem {
         return isComplete;
     }
 
-    public void setComplete() {
-        isComplete = true;
+    public void setComplete(boolean value) {
+        isComplete = value;
     }
 
     public long getId() {
@@ -48,5 +51,21 @@ public class TaskItem {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public boolean isRemind() {
+        return isRemind;
+    }
+
+    public void setRemind(boolean remind) {
+        isRemind = remind;
     }
 }
