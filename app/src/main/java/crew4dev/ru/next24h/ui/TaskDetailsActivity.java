@@ -40,7 +40,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
     private TaskItem oldTaskItem;
     private Menu menu;
-    TimePickerDialog.OnTimeSetListener t = new TimePickerDialog.OnTimeSetListener() {
+    final TimePickerDialog.OnTimeSetListener t = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             remindTime.setText(hourOfDay + ":" + minute);
         }
@@ -140,26 +140,23 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
     public void setTime(View v) {
         String time = remindTime.getText().toString();
-        if (time != null) {
-            String timeArray[] = time.split(":");
-            if (timeArray.length == 2) {
-                new TimePickerDialog(this, t,
-                        Integer.valueOf(timeArray[0]),
-                        Integer.valueOf(timeArray[1]), true)
-                        .show();
-                return;
-            }
+        String timeArray[] = time.split(":");
+        if (timeArray.length == 2) {
+            new TimePickerDialog(this, t,
+                    Integer.valueOf(timeArray[0]),
+                    Integer.valueOf(timeArray[1]), true)
+                    .show();
+            return;
         }
         Calendar dateAndTime = Calendar.getInstance();
         new TimePickerDialog(this, t,
                 dateAndTime.get(Calendar.HOUR_OF_DAY),
                 dateAndTime.get(Calendar.MINUTE), true)
                 .show();
-        return;
     }
 
     private void setInitialDateTime() {
-        if (oldTaskItem.getTime() != null)
+        if (oldTaskItem != null && oldTaskItem.getTime() != null)
             remindTime.setText(oldTaskItem.getTime());
     }
 }

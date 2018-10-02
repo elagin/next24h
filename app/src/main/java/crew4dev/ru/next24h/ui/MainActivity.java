@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.Objects;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import crew4dev.ru.next24h.App;
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
     protected void onResume() {
         super.onResume();
         TasksAdapter adapter = (TasksAdapter) ((RecyclerView) workTable.findViewById(R.id.taskRecyclerView)).getAdapter();
-        if (adapter.getItemCount() > 0) {
+        if (Objects.requireNonNull(adapter).getItemCount() > 0) {
             adapter.clearItems();
         }
         adapter.setItems(App.db().tasks().getTasks());

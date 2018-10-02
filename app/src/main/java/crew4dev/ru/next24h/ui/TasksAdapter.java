@@ -25,17 +25,18 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
     private final Context context;
     private int selectedPos = 0;
     private OnTaskListClickListener listener;
-
-    public TasksAdapter(Context context) {
-        this.context = context;
-    }
-
-    private OnViewHolderClickListener holderClickListener = new OnViewHolderClickListener() {
+    private final OnViewHolderClickListener holderClickListener = new OnViewHolderClickListener() {
         @Override
         public void OnViewHolderClick(int current) {
             setSelectedPos(current);
         }
     };
+
+    public TasksAdapter(Context context) {
+        this.context = context;
+    }
+
+    private boolean onBind;
 
     @NonNull
     @Override
@@ -57,22 +58,24 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
             holder.taskTitle.setTextColor(Color.rgb(0, 210, 0));
         }
         holder.bind(taskList.get(position));
+        onBind = true;
         holder.cbSelect.setChecked(item.isComplete());
+        onBind = false;
         holder.cbSelect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 item.setComplete(isChecked);
                 App.db().tasks().update(item);
-                notifyDataSetChanged();
+                if (!onBind) {
+                    notifyDataSetChanged();
+                }
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        if (taskList != null)
-            return taskList.size();
-        return 0;
+        return taskList.size();
     }
 
     public void clearItems() {

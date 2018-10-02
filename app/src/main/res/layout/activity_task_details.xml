@@ -18,8 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text=""
+        android:inputType="textCapSentences"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
@@ -34,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:inputType="textCapSentences"
         android:text=""
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 

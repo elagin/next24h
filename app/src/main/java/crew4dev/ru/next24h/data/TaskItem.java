@@ -8,11 +8,11 @@ public class TaskItem {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
-    String title;
-    String descr;
-    boolean isComplete;
-    String time;
-    boolean isRemind;
+    private String title;
+    private String descr;
+    private boolean isComplete;
+    private String time;
+    private boolean isRemind;
 
     public TaskItem(String title, String descr, boolean isComplete) {
         this.title = title;
