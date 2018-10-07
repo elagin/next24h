@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -55,21 +54,18 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
     @Override
     public void onBindViewHolder(@NonNull TasksViewHolder holder, final int position) {
         final TaskItem item = taskList.get(position);
+        holder.bind(taskList.get(position));
         if (item.isComplete()) {
             holder.taskTitle.setTextColor(Color.rgb(0, 210, 0));
+        } else {
+            holder.taskTitle.setTextColor(Color.rgb(0, 00, 0));
         }
-        holder.bind(taskList.get(position));
-        onBind = true;
         holder.cbSelect.setChecked(item.isComplete());
-        onBind = false;
-        holder.cbSelect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.cbSelect.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                item.setComplete(isChecked);
+            public void onClick(View v) {
+                item.setComplete(!item.isComplete());
                 App.db().tasks().update(item);
-                if (!onBind) {
-                    notifyDataSetChanged();
-                }
             }
         });
     }
