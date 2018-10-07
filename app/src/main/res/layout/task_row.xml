@@ -23,7 +23,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBaseline_toBaselineOf="@id/checkBox"
-            app:layout_constraintLeft_toRightOf="@id/checkBox" />
+            app:layout_constraintLeft_toRightOf="@id/checkBox"
+            app:layout_constraintRight_toLeftOf="@+id/timeImage" />
+
+        <ImageView
+            android:id="@+id/timeImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toRightOf="parent"
+            app:srcCompat="@android:drawable/ic_lock_idle_alarm"
+            tools:layout_editor_absoluteY="5dp" />
+
     </android.support.constraint.ConstraintLayout>
 
 </TableRow>

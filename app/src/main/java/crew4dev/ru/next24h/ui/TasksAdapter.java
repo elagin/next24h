@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -97,11 +98,13 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         private View item;
         private final TextView taskTitle;
         private final CheckBox cbSelect;
+        private final ImageView timeImage;
 
         public TasksViewHolder(@NonNull View itemView, final OnViewHolderClickListener clickListener) {
             super(itemView);
             this.taskTitle = itemView.findViewById(R.id.taskTitle);
             this.cbSelect = itemView.findViewById(R.id.checkBox);
+            this.timeImage = itemView.findViewById(R.id.timeImage);
             item = itemView;
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -112,8 +115,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         }
 
         void bind(TaskItem item) {
-            String name = item.getTitle() + " : " + item.getDescr();
-            taskTitle.setText(name);
+            taskTitle.setText(item.getTitle() + " : " + item.getDescr());
+            if (item.isRemind())
+                timeImage.setVisibility(View.VISIBLE);
+            else
+                timeImage.setVisibility(View.GONE);
         }
     }
 }

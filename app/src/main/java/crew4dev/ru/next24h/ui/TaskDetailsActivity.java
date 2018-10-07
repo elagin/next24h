@@ -1,7 +1,12 @@
 package crew4dev.ru.next24h.ui;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import crew4dev.ru.next24h.App;
 import crew4dev.ru.next24h.Constants;
+import crew4dev.ru.next24h.MyReceiver;
 import crew4dev.ru.next24h.R;
 import crew4dev.ru.next24h.data.TaskItem;
 
@@ -40,6 +46,8 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
     private TaskItem oldTaskItem;
     private Menu menu;
+    private final int NOTIFICATION_REMINDER_NIGHT = 10;
+
     final TimePickerDialog.OnTimeSetListener t = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             remindTime.setText(hourOfDay + ":" + minute);
@@ -124,6 +132,9 @@ public class TaskDetailsActivity extends AppCompatActivity {
                 oldTaskItem.setRemind(checkRemind.isChecked());
                 oldTaskItem.setTime(remindTime.getText().toString());
                 App.db().tasks().update(oldTaskItem);
+                //notifService(oldTaskItem.getTitle());
+                //NotificationUtils n = NotificationUtils.getInstance(this);
+                //n.createInfoNotification("info notification");
             } else {
                 TaskItem taskItem = new TaskItem(editDetailsTitle.getText().toString(), editDetailsDescr.getText().toString(), false);
                 App.db().tasks().insert(taskItem);
@@ -136,6 +147,61 @@ public class TaskDetailsActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void notifService(String title) {
+        Intent notifyIntent = new Intent(this, MyReceiver.class);
+        notifyIntent.putExtra(Constants.COMMAND_DELETE_NOTIF, title);
+        //notifyIntent.putExtra(Constants.TASK_TITLE, item.getTitle());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast
+                (this, NOTIFICATION_REMINDER_NIGHT, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /*
+    public void sendNotification(String title, String body) {
+        Intent i = new Intent(this, MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pi = PendingIntent.getActivity(this,
+                0 // Request code
+                    ,   i,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
+                //getString(R.string.default_notification_channel_id))
+                "default")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setAutoCancel(true)
+                .setSound(sound)
+                .setContentIntent(pi);
+
+        NotificationManager manager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        manager.notify(0, builder.build());
+    }
+*/
+    private void notif() {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("Title")
+                        .setContentText("Notification text");
+
+        Notification notification = builder.build();
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(1, notification);
     }
 
     public void setTime(View v) {

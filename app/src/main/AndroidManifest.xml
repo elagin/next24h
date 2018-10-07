@@ -19,6 +19,20 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.TaskDetailsActivity" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+        <receiver
+            android:name=".MyReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".MyNewIntentService"
+            android:exported="false" />
+
     </application>
+
 
 </manifest>
