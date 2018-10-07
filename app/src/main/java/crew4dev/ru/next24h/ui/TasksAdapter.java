@@ -23,7 +23,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
 
     private final List<TaskItem> taskList = new ArrayList<>();
     private final Context context;
-    private int selectedPos = 0;
     private OnTaskListClickListener listener;
     private final OnViewHolderClickListener holderClickListener = new OnViewHolderClickListener() {
         @Override
@@ -65,6 +64,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
             @Override
             public void onClick(View v) {
                 item.setComplete(!item.isComplete());
+                notifyDataSetChanged();
                 App.db().tasks().update(item);
             }
         });
@@ -93,12 +93,17 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
     class TasksViewHolder extends RecyclerView.ViewHolder {
         private View item;
         private final TextView taskTitle;
+        private final TextView taskDescr;
+        private final TextView taskTime;
+
         private final CheckBox cbSelect;
         private final ImageView timeImage;
 
         public TasksViewHolder(@NonNull View itemView, final OnViewHolderClickListener clickListener) {
             super(itemView);
             this.taskTitle = itemView.findViewById(R.id.taskTitle);
+            this.taskDescr = itemView.findViewById(R.id.taskDescr);
+            this.taskTime = itemView.findViewById(R.id.taskTime);
             this.cbSelect = itemView.findViewById(R.id.checkBox);
             this.timeImage = itemView.findViewById(R.id.timeImage);
             item = itemView;
@@ -111,11 +116,22 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         }
 
         void bind(TaskItem item) {
-            taskTitle.setText(item.getTitle() + " : " + item.getDescr());
-            if (item.isRemind())
+            taskTitle.setText(item.getTitle());
+
+            if (item.getDescr().length() > 0) {
+                taskDescr.setText(item.getDescr());
+                taskDescr.setVisibility(View.VISIBLE);
+            } else
+                taskDescr.setVisibility(View.GONE);
+
+            if (item.isRemind()) {
                 timeImage.setVisibility(View.VISIBLE);
-            else
+                taskTime.setVisibility(View.VISIBLE);
+                taskTime.setText(item.getTime());
+            } else {
                 timeImage.setVisibility(View.GONE);
+                taskTime.setVisibility(View.GONE);
+            }
         }
     }
 }
