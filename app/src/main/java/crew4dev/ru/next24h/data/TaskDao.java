@@ -20,7 +20,7 @@ public interface TaskDao {
     void update(TaskItem item);
 
     @Delete
-    void delete(TaskItem order);
+    void delete(TaskItem item);
 
     @Query("select * from tasks")
     List<TaskItem> getTasks();

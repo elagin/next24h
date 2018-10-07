@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -90,7 +92,14 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         }
     }
 
-    class TasksViewHolder extends RecyclerView.ViewHolder {
+    public void removeAt(int position) {
+        App.db().tasks().delete(taskList.get(position));
+        taskList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, taskList.size());
+    }
+
+    class TasksViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private View item;
         private final TextView taskTitle;
         private final TextView taskDescr;
@@ -99,21 +108,25 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         private final CheckBox cbSelect;
         private final ImageView timeImage;
 
-        public TasksViewHolder(@NonNull View itemView, final OnViewHolderClickListener clickListener) {
-            super(itemView);
-            this.taskTitle = itemView.findViewById(R.id.taskTitle);
-            this.taskDescr = itemView.findViewById(R.id.taskDescr);
-            this.taskTime = itemView.findViewById(R.id.taskTime);
-            this.cbSelect = itemView.findViewById(R.id.checkBox);
-            this.timeImage = itemView.findViewById(R.id.timeImage);
-            item = itemView;
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    clickListener.OnViewHolderClick(getAdapterPosition());
+        private final MenuItem.OnMenuItemClickListener onEditMenu = new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+//                DBHandler dbHandler = new DBHandler(ctx);
+//                List<WishMen> data = dbHandler.getWishmen();
+                if (menuItem.getTitle().equals("Delete")) {
+                    removeAt(getAdapterPosition());
                 }
-            });
-        }
+//                switch (menuItem.getItemId()) {
+//                    case 0:
+//                        //getAdapterPosition();
+//                        removeAt(getAdapterPosition());
+//                        //Do stuff
+//                        break;
+//                }
+                return true;
+            }
+        };
+
 
         void bind(TaskItem item) {
             taskTitle.setText(item.getTitle());
@@ -132,6 +145,57 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
                 timeImage.setVisibility(View.GONE);
                 taskTime.setVisibility(View.GONE);
             }
+        }
+/*
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            //super.onCreateContextMenu(menu, v, menuInfo);
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.context_menu,menu);
+        }
+
+        @Override
+        public boolean onContextItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            default:
+            return super.onContextItemSelected(item);
+        }
+    }
+*/
+
+        public TasksViewHolder(@NonNull View itemView, final OnViewHolderClickListener clickListener) {
+            super(itemView);
+            itemView.setOnCreateContextMenuListener(this);
+            this.taskTitle = itemView.findViewById(R.id.taskTitle);
+            this.taskDescr = itemView.findViewById(R.id.taskDescr);
+            this.taskTime = itemView.findViewById(R.id.taskTime);
+            this.cbSelect = itemView.findViewById(R.id.checkBox);
+            this.timeImage = itemView.findViewById(R.id.timeImage);
+            item = itemView;
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickListener.OnViewHolderClick(getAdapterPosition());
+                }
+            });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    //int  choosedId1 = product.getId();
+                    //Toast.makeText(getApplicationContext(),id,Toast.LENGTH_LONG).show();
+                    return false;
+
+                }
+            });
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            MenuItem Delete = menu.add(this.getAdapterPosition(), v.getId(), 0, "Delete");
+            //MenuItem Edit = menu.add(Menu.NONE, 1, 1, "Edit");
+            //MenuItem Delete = menu.add(Menu.NONE, 2, 2, "Delete");
+            //Edit.setOnMenuItemClickListener(onEditMenu);
+            Delete.setOnMenuItemClickListener(onEditMenu);
         }
     }
 }
