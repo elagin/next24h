@@ -1,12 +1,7 @@
 package crew4dev.ru.next24h.ui;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,8 +22,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import crew4dev.ru.next24h.App;
 import crew4dev.ru.next24h.Constants;
-import crew4dev.ru.next24h.MyReceiver;
 import crew4dev.ru.next24h.R;
+import crew4dev.ru.next24h.RemindManager;
 import crew4dev.ru.next24h.data.TaskItem;
 
 public class TaskDetailsActivity extends AppCompatActivity {
@@ -132,6 +127,10 @@ public class TaskDetailsActivity extends AppCompatActivity {
                 oldTaskItem.setRemind(checkRemind.isChecked());
                 oldTaskItem.setTime(remindTime.getText().toString());
                 App.db().tasks().update(oldTaskItem);
+                if (checkRemind.isChecked())
+                    RemindManager.setNotify(this, oldTaskItem);
+                else
+                    RemindManager.cancelNotify(this, oldTaskItem.getId());
                 //notifService(oldTaskItem.getTitle());
                 //NotificationUtils n = NotificationUtils.getInstance(this);
                 //n.createInfoNotification("info notification");
@@ -142,26 +141,28 @@ public class TaskDetailsActivity extends AppCompatActivity {
             finish();
         } else if (id == R.id.task_delete) {
             if (oldTaskItem != null) {
+                if (checkRemind.isChecked())
+                    RemindManager.cancelNotify(this, oldTaskItem.getId());
                 App.db().tasks().delete(oldTaskItem);
                 finish();
             }
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private void notifService(String title) {
-        Intent notifyIntent = new Intent(this, MyReceiver.class);
-        notifyIntent.putExtra(Constants.COMMAND_DELETE_NOTIF, title);
-        //notifyIntent.putExtra(Constants.TASK_TITLE, item.getTitle());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast
-                (this, NOTIFICATION_REMINDER_NIGHT, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        try {
-            pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
-            e.printStackTrace();
-        }
-
-    }
+//
+//    private void notifService(String title) {
+//        Intent notifyIntent = new Intent(this, MyReceiver.class);
+//        notifyIntent.putExtra(Constants.COMMAND_DELETE_NOTIF, title);
+//        //notifyIntent.putExtra(Constants.TASK_TITLE, item.getTitle());
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast
+//                (this, NOTIFICATION_REMINDER_NIGHT, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        try {
+//            pendingIntent.send();
+//        } catch (PendingIntent.CanceledException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     /*
     public void sendNotification(String title, String body) {
@@ -190,19 +191,19 @@ public class TaskDetailsActivity extends AppCompatActivity {
         manager.notify(0, builder.build());
     }
 */
-    private void notif() {
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("Title")
-                        .setContentText("Notification text");
-
-        Notification notification = builder.build();
-
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(1, notification);
-    }
+//    private void notif() {
+//        NotificationCompat.Builder builder =
+//                new NotificationCompat.Builder(this)
+//                        .setSmallIcon(R.mipmap.ic_launcher)
+//                        .setContentTitle("Title")
+//                        .setContentText("Notification text");
+//
+//        Notification notification = builder.build();
+//
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        notificationManager.notify(1, notification);
+//    }
 
     public void setTime(View v) {
         String time = remindTime.getText().toString();

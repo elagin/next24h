@@ -1,8 +1,5 @@
 package crew4dev.ru.next24h.ui;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -10,20 +7,15 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.Calendar;
-import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import crew4dev.ru.next24h.App;
 import crew4dev.ru.next24h.Constants;
-import crew4dev.ru.next24h.MyReceiver;
 import crew4dev.ru.next24h.R;
 import crew4dev.ru.next24h.data.TaskItem;
 
@@ -59,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
         TasksAdapter adapter = new TasksAdapter(this);
         adapter.setOnCollectGroupClickListener(this);
         recyclerView.setAdapter(adapter);
-        setNotifes(this);
+        //RemindManager.setAllNotifes(this);
     }
 
     @Override
@@ -96,15 +88,24 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
         return true;
     }
 
-    private void setNotifes(Context context) {
-        List<TaskItem> tasks = App.db().tasks().getTasks();
-        Calendar how = Calendar.getInstance();
-        Calendar taskTime = (Calendar) how.clone();
-        for (TaskItem item : tasks) {
+    /*
+        private void cancelNotify(long itemId){
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            Intent notifyIntent = new Intent(getApplicationContext(), MyReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    getApplicationContext(), (int)(itemId), notifyIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            alarmManager.cancel(pendingIntent);
+        }
+
+        private void setNotify(TaskItem item) {
+            final Calendar how = Calendar.getInstance();
+            Calendar taskTime = (Calendar) how.clone();
             if (!item.isComplete() && item.isRemind() && item.getTime() != null) {
                 String[] data = item.getTime().split(":");
-                Integer hours = null;
-                Integer minutes = null;
+                Integer hours;
+                Integer minutes;
                 if (data.length == 2) {
                     hours = Integer.valueOf(data[0]);
                     minutes = Integer.valueOf(data[1]);
@@ -117,16 +118,24 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
                         Log.d(TAG, item.getTitle() + " завтра в " + String.format("%1$tA %1$tb %1$td %1$tY at %1$tI:%1$tM %1$Tp", taskTime));
                     }
                     Intent notifyIntent = new Intent(this, MyReceiver.class);
-                    notifyIntent.putExtra(Constants.COMMAND_CREATE_NOTIF, item.getTitle());
+                    ///notifyIntent.putExtra(Constants.COMMAND_CREATE_NOTIF, item.getTitle());
                     notifyIntent.putExtra(Constants.TASK_TITLE, item.getTitle());
                     notifyIntent.putExtra(Constants.TASK_DESC, item.getDescr());
                     PendingIntent pendingIntent = PendingIntent.getBroadcast
-                            (context, NOTIFICATION_REMINDER_NIGHT, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, taskTime.getTimeInMillis() - how.getTimeInMillis(), 1000 * 60 * 60 * 24, pendingIntent);
+                            (this, (int)item.getId(), notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.notify();
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, taskTime.getTimeInMillis(), 1000 * 60 * 60 * 24, pendingIntent);
                 }
             }
         }
-
-    }
+    */
+//    private void setNotifes() {
+//        List<TaskItem> tasks = App.db().tasks().getTasks();
+//        for (TaskItem item : tasks) {
+//            if (!item.isComplete() && item.isRemind() && item.getTime() != null) {
+//                RemindManager.setNotify(this, item);
+//            }
+//        }
+//    }
 }

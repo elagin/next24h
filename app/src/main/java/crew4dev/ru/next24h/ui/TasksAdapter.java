@@ -19,9 +19,12 @@ import java.util.List;
 
 import crew4dev.ru.next24h.App;
 import crew4dev.ru.next24h.R;
+import crew4dev.ru.next24h.RemindManager;
 import crew4dev.ru.next24h.data.TaskItem;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHolder> {
+
+    private static final String TAG = "TasksAdapter";
 
     private final List<TaskItem> taskList = new ArrayList<>();
     private final Context context;
@@ -37,8 +40,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         this.context = context;
     }
 
-    private boolean onBind;
-
     @NonNull
     @Override
     public TasksViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,7 +54,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TasksViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final TasksViewHolder holder, final int position) {
         final TaskItem item = taskList.get(position);
         holder.bind(taskList.get(position));
         if (item.isComplete()) {
@@ -65,7 +66,16 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         holder.cbSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                item.setComplete(!item.isComplete());
+                if (holder.cbSelect.isChecked()) {
+                    item.setComplete(true);
+                    if (item.isRemind()) {
+                        RemindManager.cancelNotify(context, item.getId());
+                        item.setRemind(false);
+                    }
+                } else {
+                    item.setComplete(false);
+                }
+                //item.setComplete(!item.isComplete());
                 notifyDataSetChanged();
                 App.db().tasks().update(item);
             }
@@ -93,12 +103,58 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
     }
 
     public void removeAt(int position) {
-        App.db().tasks().delete(taskList.get(position));
+        TaskItem item = taskList.get(position);
+        if (!item.isComplete() && item.isRemind()) {
+            RemindManager.cancelNotify(context, item.getId());
+        }
+        App.db().tasks().delete(item);
         taskList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, taskList.size());
     }
 
+    /*
+        private void setNotify(TaskItem item) {
+            final Calendar how = Calendar.getInstance();
+            Calendar taskTime = (Calendar) how.clone();
+            if (!item.isComplete() && item.isRemind() && item.getTime() != null) {
+                String[] data = item.getTime().split(":");
+                Integer hours;
+                Integer minutes;
+                if (data.length == 2) {
+                    hours = Integer.valueOf(data[0]);
+                    minutes = Integer.valueOf(data[1]);
+                    taskTime.set(Calendar.HOUR, hours);
+                    taskTime.set(Calendar.MINUTE, minutes);
+                    if (taskTime.after(how)) {
+                        Log.d(TAG, item.getTitle() + " cегодня в " + String.format("%1$tA %1$tb %1$td %1$tY at %1$tI:%1$tM %1$Tp", taskTime));
+                    } else {
+                        taskTime.add(Calendar.DAY_OF_MONTH, 1);
+                        Log.d(TAG, item.getTitle() + " завтра в " + String.format("%1$tA %1$tb %1$td %1$tY at %1$tI:%1$tM %1$Tp", taskTime));
+                    }
+                    Intent notifyIntent = new Intent(context, MyReceiver.class);
+                    ///notifyIntent.putExtra(Constants.COMMAND_CREATE_NOTIF, item.getTitle());
+                    notifyIntent.putExtra(Constants.TASK_TITLE, item.getTitle());
+                    notifyIntent.putExtra(Constants.TASK_DESC, item.getDescr());
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast
+                            (context, (int) item.getId(), notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.notify();
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, taskTime.getTimeInMillis(), 1000 * 60 * 60 * 24, pendingIntent);
+                }
+            }
+        }
+
+        private void cancelNotify(long itemId) {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent notifyIntent = new Intent(context.getApplicationContext(), MyReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    context.getApplicationContext(), (int) (itemId), notifyIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            alarmManager.cancel(pendingIntent);
+        }
+    */
     class TasksViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private View item;
         private final TextView taskTitle;
