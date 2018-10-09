@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import crew4dev.ru.next24h.App;
@@ -50,6 +51,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
 
     public void setItems(Collection<TaskItem> items) {
         taskList.addAll(items);
+        Collections.sort(taskList);
         notifyDataSetChanged();
     }
 
@@ -58,9 +60,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         final TaskItem item = taskList.get(position);
         holder.bind(taskList.get(position));
         if (item.isComplete()) {
-            holder.taskTitle.setTextColor(Color.rgb(0, 210, 0));
+            holder.taskTitle.setTextColor(Color.rgb(100, 100, 100));
+            holder.taskDescr.setVisibility(View.GONE);
         } else {
             holder.taskTitle.setTextColor(Color.rgb(0, 00, 0));
+            holder.taskDescr.setVisibility(View.VISIBLE);
         }
         holder.cbSelect.setChecked(item.isComplete());
         holder.cbSelect.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +115,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         taskList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, taskList.size());
+        Collections.sort(taskList);
     }
 
     /*

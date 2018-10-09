@@ -6,4 +6,5 @@ public class Constants {
     public static final String COMMAND_DELETE_NOTIF = "delete_notif";
     public static final String TASK_TITLE = "task_title";
     public static final String TASK_DESC = "task_desc";
+    public static final String REMINDE_TIME_FORMAT = "%d:%02d";
 }

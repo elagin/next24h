@@ -6,6 +6,7 @@ import android.arch.persistence.room.Room;
 import crew4dev.ru.next24h.data.LocalDatabase;
 
 import static crew4dev.ru.next24h.data.LocalDatabase.MIGRATION_1_2;
+import static crew4dev.ru.next24h.data.LocalDatabase.MIGRATION_2_3;
 
 public class App extends Application {
 
@@ -23,6 +24,7 @@ public class App extends Application {
         mDb = Room.databaseBuilder(this, LocalDatabase.class, "local_db")
                 .allowMainThreadQueries()
                 .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_2_3)
                 .build();
 
     }

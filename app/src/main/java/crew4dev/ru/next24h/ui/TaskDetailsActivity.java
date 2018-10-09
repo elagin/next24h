@@ -26,6 +26,8 @@ import crew4dev.ru.next24h.R;
 import crew4dev.ru.next24h.RemindManager;
 import crew4dev.ru.next24h.data.TaskItem;
 
+import static crew4dev.ru.next24h.Constants.REMINDE_TIME_FORMAT;
+
 public class TaskDetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.editDetailsTitle)
@@ -45,7 +47,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
     final TimePickerDialog.OnTimeSetListener t = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            remindTime.setText(hourOfDay + ":" + minute);
+            remindTime.setText(String.format(REMINDE_TIME_FORMAT, hourOfDay, minute));
         }
     };
 
@@ -130,6 +132,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
             if (oldTaskItem != null) {
                 storedTask.setId(oldTaskItem.getId());
                 if (!checkRemind.isChecked() && oldTaskItem.isRemind())
+                    storedTask.clearRemindTime();
                     RemindManager.cancelNotify(this, oldTaskItem.getId());
                 App.db().tasks().update(storedTask);
             } else
