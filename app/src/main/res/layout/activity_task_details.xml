@@ -13,12 +13,13 @@
         android:text="Заголовок"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/editDetailsTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textCapSentences"
+        android:inputType="textCapSentences|textMultiLine"
+        android:maxLines="5"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
@@ -28,27 +29,26 @@
         android:text="Описание"
         app:layout_constraintTop_toBottomOf="@+id/editDetailsTitle" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/editDetailsDescr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textCapSentences"
-        android:text=""
+        android:inputType="textCapSentences|textMultiLine"
+        android:maxLines="5"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Время"
+        android:text="Напомнить"
         app:layout_constraintTop_toBottomOf="@+id/editDetailsDescr" />
 
     <CheckBox
         android:id="@+id/check_remind"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Напомнить"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <TextView
