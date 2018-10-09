@@ -3,13 +3,11 @@ package crew4dev.ru.next24h.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.Objects;
 
@@ -36,14 +34,6 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, TaskDetailsActivity.class));
-            }
-        });
 
         RecyclerView recyclerView = workTable.findViewById(R.id.taskRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -74,9 +64,16 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        switch (id) {
+            case R.id.action_settings:
+                break;
+            case R.id.add_task:
+                startActivity(new Intent(MainActivity.this, TaskDetailsActivity.class));
+                break;
+        }
         if (id == R.id.action_settings) {
             return true;
-        }
+        } else
         return super.onOptionsItemSelected(item);
     }
 

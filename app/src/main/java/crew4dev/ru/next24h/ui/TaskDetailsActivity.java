@@ -121,23 +121,21 @@ public class TaskDetailsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.task_save) {
+            TaskItem storedTask = new TaskItem();
+            storedTask.setTitle(editDetailsTitle.getText().toString());
+            storedTask.setDescr(editDetailsDescr.getText().toString());
+            storedTask.setRemind(checkRemind.isChecked());
+            storedTask.setTime(remindTime.getText().toString());
+
             if (oldTaskItem != null) {
-                oldTaskItem.setTitle(editDetailsTitle.getText().toString());
-                oldTaskItem.setDescr(editDetailsDescr.getText().toString());
-                oldTaskItem.setRemind(checkRemind.isChecked());
-                oldTaskItem.setTime(remindTime.getText().toString());
-                App.db().tasks().update(oldTaskItem);
-                if (checkRemind.isChecked())
-                    RemindManager.setNotify(this, oldTaskItem);
-                else
+                storedTask.setId(oldTaskItem.getId());
+                if (!checkRemind.isChecked() && oldTaskItem.isRemind())
                     RemindManager.cancelNotify(this, oldTaskItem.getId());
-                //notifService(oldTaskItem.getTitle());
-                //NotificationUtils n = NotificationUtils.getInstance(this);
-                //n.createInfoNotification("info notification");
-            } else {
-                TaskItem taskItem = new TaskItem(editDetailsTitle.getText().toString(), editDetailsDescr.getText().toString(), false);
-                App.db().tasks().insert(taskItem);
-            }
+                App.db().tasks().update(storedTask);
+            } else
+                App.db().tasks().insert(storedTask);
+            if (checkRemind.isChecked())
+                RemindManager.setNotify(this, storedTask);
             finish();
         } else if (id == R.id.task_delete) {
             if (oldTaskItem != null) {

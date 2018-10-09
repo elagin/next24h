@@ -14,6 +14,8 @@ public class TaskItem {
     private String time;
     private boolean isRemind;
 
+    public TaskItem() {}
+
     public TaskItem(String title, String descr, boolean isComplete) {
         this.title = title;
         this.descr = descr;
