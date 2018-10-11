@@ -111,6 +111,12 @@ public class TaskItem implements Comparable<TaskItem> {
     @Override
     public int compareTo(@NonNull TaskItem o) {
         Log.d(TAG, "Compare: " + this.title + " / " + o.title);
+        if (isComplete && !o.isComplete) {
+            return 1;
+        } else if (!isComplete && o.isComplete) {
+            return -1;
+        }
+
         if (isRemind) {
             if (!o.isRemind) {
                 return 1;

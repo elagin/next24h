@@ -79,6 +79,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
                 } else {
                     item.setComplete(false);
                 }
+                Collections.sort(taskList);
                 //item.setComplete(!item.isComplete());
                 notifyDataSetChanged();
                 App.db().tasks().update(item);
