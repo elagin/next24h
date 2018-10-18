@@ -5,6 +5,9 @@ import android.arch.persistence.room.Room;
 
 import crew4dev.ru.next24h.data.LocalDatabase;
 import crew4dev.ru.next24h.data.TaskGroup;
+import crew4dev.ru.next24h.di.components.DaggerUtilsComponent;
+import crew4dev.ru.next24h.di.components.UtilsComponent;
+import crew4dev.ru.next24h.di.modules.ContextModule;
 
 import static crew4dev.ru.next24h.data.LocalDatabase.MIGRATION_1_2;
 import static crew4dev.ru.next24h.data.LocalDatabase.MIGRATION_2_3;
@@ -14,15 +17,25 @@ public class App extends Application {
 
     private static App instance;
     private static LocalDatabase mDb;
+    private UtilsComponent utilsComponent;
 
     public static LocalDatabase db() {
         return instance.mDb;
     }
 
+    public static App getApplication() {
+        return instance;
+    }
+
+    public UtilsComponent getUtilsComponent() {
+        return utilsComponent;
+    }
+
     @Override
     public void onCreate() {
-        instance = this;
         super.onCreate();
+        instance = this;
+        utilsComponent = DaggerUtilsComponent.builder()/*.roomModule(new RoomModule(DbName))*/.contextModule(new ContextModule(getApplicationContext())).build();
         mDb = Room.databaseBuilder(this, LocalDatabase.class, "local_db")
                 .allowMainThreadQueries()
                 .addMigrations(MIGRATION_1_2)

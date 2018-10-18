@@ -15,19 +15,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import crew4dev.ru.next24h.App;
 import crew4dev.ru.next24h.Constants;
 import crew4dev.ru.next24h.R;
+import crew4dev.ru.next24h.SharedPrefApi;
 import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.data.TaskItem;
+import crew4dev.ru.next24h.di.components.DaggerControllerComponent;
+import crew4dev.ru.next24h.di.modules.ActivityModule;
+import crew4dev.ru.next24h.ui.controllers.interfaces.MainControllerContract;
+import crew4dev.ru.next24h.ui.interfaces.MainActivityContract;
 
 import static crew4dev.ru.next24h.App.db;
 
-public class MainActivity extends AppCompatActivity implements OnTaskListClickListener {
+public class MainActivity extends AppCompatActivity implements MainActivityContract, OnTaskListClickListener {
 
     private static final String TAG = "MainActivity";
+    //private boolean isHideCompletedTask = false;
 
     @BindView(R.id.workLayout)
     CoordinatorLayout workTable;
@@ -37,6 +45,12 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
 
     @BindView(R.id.textEmptyTask)
     TextView textEmptyTask;
+
+    @Inject
+    public SharedPrefApi sharedPrefApi;
+
+    @Inject
+    public MainControllerContract mainController;
 
     List<TaskGroup> groups = new ArrayList<>();
 
@@ -51,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.hide_completed_task).setChecked(sharedPrefApi.getHideCompletedTask());
         return true;
     }
 
@@ -63,10 +78,11 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
             adapter.clearItems();
         }
         if (totalItems.size() > 0) {
-
             for (TaskItem item : totalItems) {
-                if (isVisibleGroup(item.getTaskGroupId()))
-                    showItems.add(item);
+                if ((sharedPrefApi.getHideCompletedTask() && !item.isComplete()) || !sharedPrefApi.getHideCompletedTask()) {
+                    if (isVisibleGroup(item.getTaskGroupId()))
+                        showItems.add(item);
+                }
             }
             adapter.setItems(showItems);
         }
@@ -91,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        DaggerControllerComponent.builder().activityModule(new ActivityModule(this)).utilsComponent(App.getApplication().getUtilsComponent()).build().inject(this);
+
         RecyclerView recyclerView = workTable.findViewById(R.id.taskRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -110,58 +128,17 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
             case R.id.add_task:
                 startActivity(new Intent(MainActivity.this, TaskDetailsActivity.class));
                 break;
+            case R.id.hide_completed_task:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    sharedPrefApi.setHideCompletedTask(false);
+                } else {
+                    item.setChecked(true);
+                    sharedPrefApi.setHideCompletedTask(true);
+                }
+                reloadItems();
+                break;
             case R.id.filter_group:
-/*
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-
-                // Set a title for alert dialog
-                builder.setTitle("Choose a color...");
-
-                // Initializing an array of colors
-                final String[] colors = new String[]{
-                        "Red",
-                        "Green",
-                        "Blue",
-                        "Yellow"
-                };
-
-                List<String> groups = new ArrayList<String>();
-                groups.add("Автозапчасти");
-                groups.add("Магазин");
-              // Set the list of items for alert dialog
-                final String[] charSequences = groups.toArray(new String[groups.size()]);
-                builder.setItems(charSequences, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String selectedColor = Arrays.asList(charSequences).get(which);
-                        // Set the layout background color as user selection
-                        //rl.setBackgroundColor(Color.parseColor(selectedColor));
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                */
-/*
-                DialogFragment dialog = new GroupDialog();
-                List<String> groups = new ArrayList<String>();
-                groups.add("Автозапчасти");
-                groups.add("Магазин");
-                ((GroupDialog) dialog).setData(groups);
-                //dialog.setTargetFragment(MainActivity.this, 0);
-                Bundle args = new Bundle();
-                args.putString(GroupDialog.ARG_TITLE, "title");
-                args.putString(GroupDialog.ARG_MESSAGE, "message");
-                dialog.setArguments(args);
-                //dialog.setTargetFragment(this, YES_NO_CALL);
-                dialog.show(getSupportFragmentManager(), "tag");
-*/
-                //GroupDialog.showSelectGroups(this, searchItems ,listener);
-                //List<String> groups = new ArrayList<String>();
-                //List<TaskGroup> groups = App.db().taskGroups().getGroups();
-
-                //groups.add("Автозапчасти");
-                //groups.add("Магазин");
                 GroupDialog.showSelectGroups(this, groups, searchItem -> {});
                 break;
         }
@@ -192,54 +169,12 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
         reloadItems();
     }
 
-    /*
-        private void cancelNotify(long itemId){
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            Intent notifyIntent = new Intent(getApplicationContext(), MyReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                    getApplicationContext(), (int)(itemId), notifyIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+    public MainControllerContract getMainController() {
+        return mainController;
+    }
 
-            alarmManager.cancel(pendingIntent);
-        }
+    @Override
+    public void closeActivity() {
 
-        private void setNotify(TaskItem item) {
-            final Calendar how = Calendar.getInstance();
-            Calendar taskTime = (Calendar) how.clone();
-            if (!item.isComplete() && item.isRemind() && item.getTime() != null) {
-                String[] data = item.getTime().split(":");
-                Integer hours;
-                Integer minutes;
-                if (data.length == 2) {
-                    hours = Integer.valueOf(data[0]);
-                    minutes = Integer.valueOf(data[1]);
-                    taskTime.set(Calendar.HOUR, hours);
-                    taskTime.set(Calendar.MINUTE, minutes);
-                    if (taskTime.after(how)) {
-                        Log.d(TAG, item.getTitle() + " cегодня в " + String.format("%1$tA %1$tb %1$td %1$tY at %1$tI:%1$tM %1$Tp", taskTime));
-                    } else {
-                        taskTime.add(Calendar.DAY_OF_MONTH, 1);
-                        Log.d(TAG, item.getTitle() + " завтра в " + String.format("%1$tA %1$tb %1$td %1$tY at %1$tI:%1$tM %1$Tp", taskTime));
-                    }
-                    Intent notifyIntent = new Intent(this, MyReceiver.class);
-                    ///notifyIntent.putExtra(Constants.COMMAND_CREATE_NOTIF, item.getTitle());
-                    notifyIntent.putExtra(Constants.TASK_TITLE, item.getTitle());
-                    notifyIntent.putExtra(Constants.TASK_DESC, item.getDescr());
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast
-                            (this, (int)item.getId(), notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.notify();
-                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, taskTime.getTimeInMillis(), 1000 * 60 * 60 * 24, pendingIntent);
-                }
-            }
-        }
-    */
-//    private void setNotifes() {
-//        List<TaskItem> tasks = App.db().tasks().getTasks();
-//        for (TaskItem item : tasks) {
-//            if (!item.isComplete() && item.isRemind() && item.getTime() != null) {
-//                RemindManager.setNotify(this, item);
-//            }
-//        }
-//    }
+    }
 }

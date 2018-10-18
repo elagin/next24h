@@ -10,4 +10,5 @@
     <string name="cancel">Отмена</string>
     <string name="enable_all">Включить все и закрыть</string>
     <string name="no_tasks">Нет задач в выбраных категориях</string>
+    <string name="hide_completed_task">Прятать выполненые</string>
 </resources>

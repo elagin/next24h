@@ -17,4 +17,9 @@
         android:icon="@android:drawable/arrow_down_float"
         android:title="@string/add_task"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/hide_completed_task"
+        android:checkable="true"
+        android:title="@string/hide_completed_task"
+        app:showAsAction="never" />
 </menu>
