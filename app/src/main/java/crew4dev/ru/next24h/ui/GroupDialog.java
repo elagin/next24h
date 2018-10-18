@@ -74,6 +74,14 @@ public class GroupDialog extends DialogFragment {
                         public void onClick(DialogInterface dialog, int whichButton) {
                         }
                     });
+//            ad.setNeutralButton("Вкл. все", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    for (int i = 0; i < checkedItems.length; i++) {
+//                        checkedItems[i] = true;
+//                    }
+//                    //LoginDialogFragment.this.getDialog().cancel();
+//                }
+//            });
             ad.setCancelable(true);
             try {
                 dialog = ad.show();

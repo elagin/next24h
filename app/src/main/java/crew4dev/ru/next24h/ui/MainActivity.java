@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import crew4dev.ru.next24h.App;
 import crew4dev.ru.next24h.Constants;
 import crew4dev.ru.next24h.R;
 import crew4dev.ru.next24h.data.TaskGroup;
@@ -29,10 +30,15 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
     @BindView(R.id.workLayout)
     CoordinatorLayout workTable;
 
-    private final int NOTIFICATION_REMINDER_NIGHT = 10;
-
-    private final int YES_NO_CALL = 1;
     List<TaskGroup> groups = new ArrayList<>();
+
+    private boolean isVisibleGroup(Long id) {
+        for (TaskGroup group : groups) {
+            if (group.getId() == id)
+                return group.isVisible();
+        }
+        return false;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -40,14 +46,19 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
         return true;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void reloadItems() {
         TasksAdapter adapter = (TasksAdapter) ((RecyclerView) workTable.findViewById(R.id.taskRecyclerView)).getAdapter();
         if (Objects.requireNonNull(adapter).getItemCount() > 0) {
             adapter.clearItems();
         }
-        adapter.setItems(db().tasks().getTasks());
+
+        List<TaskItem> totalItems = db().tasks().getTasks();
+        List<TaskItem> showItems = new ArrayList<>();
+        for (TaskItem item : totalItems) {
+            if (isVisibleGroup(item.getTaskGroupId()))
+                showItems.add(item);
+        }
+        adapter.setItems(showItems);
         adapter.notifyDataSetChanged();
     }
 
@@ -55,23 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TaskGroup group = new TaskGroup();
-        group.setId(0);
-        group.setName("Нулевой");
-        group.setVisible(false);
-        groups.add(group);
-
-        TaskGroup group1 = new TaskGroup();
-        group1.setId(1);
-        group1.setName("Первый");
-        group1.setVisible(false);
-        groups.add(group1);
-
-        TaskGroup group2 = new TaskGroup();
-        group2.setId(2);
-        group2.setName("Второй");
-        group2.setVisible(false);
-        groups.add(group2);
+        groups = App.db().taskGroups().getGroups();
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -82,7 +77,8 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
         TasksAdapter adapter = new TasksAdapter(this);
         adapter.setOnCollectGroupClickListener(this);
         recyclerView.setAdapter(adapter);
-        //RemindManager.setAllNotifes(this);
+
+        reloadItems();
     }
 
     @Override
@@ -152,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
 
                     }
                 });
-
                 break;
         }
         if (id == R.id.action_settings) {
@@ -172,12 +167,14 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
 
     public void doPositiveClick(boolean[] mSelectedItems) {
         for (int i = 0; i < groups.size(); i++) {
-            if (mSelectedItems[i]) {
-                groups.get(i).setVisible(true);
-            } else {
-                groups.get(i).setVisible(false);
-            }
+            TaskGroup group = groups.get(i);
+            if (mSelectedItems[i])
+                group.setVisible(true);
+            else
+                group.setVisible(false);
+            App.db().taskGroups().update(group);
         }
+        reloadItems();
     }
 
     /*
