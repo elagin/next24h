@@ -9,12 +9,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import crew4dev.ru.next24h.Constants;
 import crew4dev.ru.next24h.R;
+import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.data.TaskItem;
 
 import static crew4dev.ru.next24h.App.db;
@@ -28,21 +31,8 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
 
     private final int NOTIFICATION_REMINDER_NIGHT = 10;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-
-        RecyclerView recyclerView = workTable.findViewById(R.id.taskRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        TasksAdapter adapter = new TasksAdapter(this);
-        adapter.setOnCollectGroupClickListener(this);
-        recyclerView.setAdapter(adapter);
-        //RemindManager.setAllNotifes(this);
-    }
+    private final int YES_NO_CALL = 1;
+    List<TaskGroup> groups = new ArrayList<>();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -62,6 +52,40 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        TaskGroup group = new TaskGroup();
+        group.setId(0);
+        group.setName("Нулевой");
+        group.setVisible(false);
+        groups.add(group);
+
+        TaskGroup group1 = new TaskGroup();
+        group1.setId(1);
+        group1.setName("Первый");
+        group1.setVisible(false);
+        groups.add(group1);
+
+        TaskGroup group2 = new TaskGroup();
+        group2.setId(2);
+        group2.setName("Второй");
+        group2.setVisible(false);
+        groups.add(group2);
+
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
+        RecyclerView recyclerView = workTable.findViewById(R.id.taskRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        TasksAdapter adapter = new TasksAdapter(this);
+        adapter.setOnCollectGroupClickListener(this);
+        recyclerView.setAdapter(adapter);
+        //RemindManager.setAllNotifes(this);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
@@ -70,6 +94,66 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
             case R.id.add_task:
                 startActivity(new Intent(MainActivity.this, TaskDetailsActivity.class));
                 break;
+            case R.id.filter_group:
+/*
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                // Set a title for alert dialog
+                builder.setTitle("Choose a color...");
+
+                // Initializing an array of colors
+                final String[] colors = new String[]{
+                        "Red",
+                        "Green",
+                        "Blue",
+                        "Yellow"
+                };
+
+                List<String> groups = new ArrayList<String>();
+                groups.add("Автозапчасти");
+                groups.add("Магазин");
+              // Set the list of items for alert dialog
+                final String[] charSequences = groups.toArray(new String[groups.size()]);
+                builder.setItems(charSequences, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String selectedColor = Arrays.asList(charSequences).get(which);
+                        // Set the layout background color as user selection
+                        //rl.setBackgroundColor(Color.parseColor(selectedColor));
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                */
+/*
+                DialogFragment dialog = new GroupDialog();
+                List<String> groups = new ArrayList<String>();
+                groups.add("Автозапчасти");
+                groups.add("Магазин");
+                ((GroupDialog) dialog).setData(groups);
+                //dialog.setTargetFragment(MainActivity.this, 0);
+                Bundle args = new Bundle();
+                args.putString(GroupDialog.ARG_TITLE, "title");
+                args.putString(GroupDialog.ARG_MESSAGE, "message");
+                dialog.setArguments(args);
+                //dialog.setTargetFragment(this, YES_NO_CALL);
+                dialog.show(getSupportFragmentManager(), "tag");
+*/
+                //GroupDialog.showSelectGroups(this, searchItems ,listener);
+                //List<String> groups = new ArrayList<String>();
+                //List<TaskGroup> groups = App.db().taskGroups().getGroups();
+
+                //groups.add("Автозапчасти");
+                //groups.add("Магазин");
+                GroupDialog.showSelectGroups(this, groups, new OnSelectClickListener() {
+                    @Override
+                    public void OnSelectClick(int searchItem) {
+
+                    }
+                });
+
+                break;
         }
         if (id == R.id.action_settings) {
             return true;
@@ -77,12 +161,23 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public boolean OnTaskListClick(TaskItem task, int selectedPos) {
         Intent intent = new Intent(MainActivity.this, TaskDetailsActivity.class);
         intent.putExtra(Constants.ID_PARAM, task.getId());
         startActivity(intent);
         return true;
+    }
+
+    public void doPositiveClick(boolean[] mSelectedItems) {
+        for (int i = 0; i < groups.size(); i++) {
+            if (mSelectedItems[i]) {
+                groups.get(i).setVisible(true);
+            } else {
+                groups.get(i).setVisible(false);
+            }
+        }
     }
 
     /*

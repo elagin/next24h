@@ -22,6 +22,7 @@ public class TaskItem implements Comparable<TaskItem> {
     private boolean isRemind;
     private Integer hour;
     private Integer minute;
+    private long taskGroupId;
 
     public TaskItem() {}
 
@@ -133,5 +134,13 @@ public class TaskItem implements Comparable<TaskItem> {
         } else {
             return -1;
         }
+    }
+
+    public long getTaskGroupId() {
+        return taskGroupId;
+    }
+
+    public void setTaskGroupId(long taskGroupId) {
+        this.taskGroupId = taskGroupId;
     }
 }

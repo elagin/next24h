@@ -11,5 +11,10 @@
         android:id="@+id/add_task"
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/add_task"
-        app:showAsAction="always"></item>
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/filter_group"
+        android:icon="@android:drawable/arrow_down_float"
+        android:title="@string/add_task"
+        app:showAsAction="always" />
 </menu>

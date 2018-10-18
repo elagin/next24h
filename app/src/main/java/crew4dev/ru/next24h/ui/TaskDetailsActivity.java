@@ -5,18 +5,24 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,11 +30,16 @@ import crew4dev.ru.next24h.App;
 import crew4dev.ru.next24h.Constants;
 import crew4dev.ru.next24h.R;
 import crew4dev.ru.next24h.RemindManager;
+import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.data.TaskItem;
 
 import static crew4dev.ru.next24h.Constants.REMINDE_TIME_FORMAT;
+import static crew4dev.ru.next24h.Tools.toCharSequenceArray;
+import static crew4dev.ru.next24h.ui.GroupDialog.showNewGroupName;
 
 public class TaskDetailsActivity extends AppCompatActivity {
+
+    private static final String TAG = "TaskDetailsActivity";
 
     @BindView(R.id.editDetailsTitle)
     EditText editDetailsTitle;
@@ -41,9 +52,15 @@ public class TaskDetailsActivity extends AppCompatActivity {
     @BindView(R.id.timeButton)
     ImageButton timeButton;
 
+    @BindView(R.id.spinnerGroup)
+    Spinner spinnerGroup;
+
     private TaskItem oldTaskItem;
+    List<TaskGroup> groups = new ArrayList<>();
     private Menu menu;
     private final int NOTIFICATION_REMINDER_NIGHT = 10;
+    private TaskGroup currentGroup;
+    private CharSequence[] charSequences;
 
     final TimePickerDialog.OnTimeSetListener t = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -117,6 +134,71 @@ public class TaskDetailsActivity extends AppCompatActivity {
             }
         });
         setInitialDateTime();
+        groups = App.db().taskGroups().getGroups();
+        setSpinner();
+        spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (position == App.db().taskGroups().getGroups().size()) {
+                    createNewGroup();
+                }
+                Log.d(TAG, "onItemSelected: " + position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                Log.d(TAG, "onNothingSelected");
+            }
+
+        });
+    }
+
+    private int getGroupIndex(long groupId) {
+        for (int i = 0; i < groups.size(); i++) {
+            if (groups.get(i).getId() == groupId)
+                return i;
+        }
+        return 0;
+    }
+
+    private void setSpinner() {
+        String newName = "Новая категория";
+        for (int i = 0; i < groups.size(); i++) {
+            if (groups.get(i).getName().equals(newName)) {
+                groups.remove(i);
+                break;
+            }
+        }
+
+        TaskGroup newGroup = new TaskGroup();
+        newGroup.setId(Integer.MAX_VALUE);
+        newGroup.setName(newName);
+        groups.add(newGroup);
+        charSequences = toCharSequenceArray(groups);
+
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, charSequences);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGroup.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        if (oldTaskItem != null) {
+            int index = getGroupIndex(oldTaskItem.getTaskGroupId());
+            spinnerGroup.setSelection(index, false);
+        } else if (currentGroup != null) {
+            //oldTaskItem.setTaskGroupId(currentGroup.getId());
+            int index = getGroupIndex(currentGroup.getId());
+            spinnerGroup.setSelection(index, false);
+
+        } else {
+            spinnerGroup.setSelection(0, false);
+        }
+    }
+
+    private void createNewGroup() {
+        showNewGroupName(this, "", new OnSelectClickListener() {
+            @Override
+            public void OnSelectClick(int searchItem) {}
+        });
     }
 
     @Override
@@ -128,6 +210,8 @@ public class TaskDetailsActivity extends AppCompatActivity {
             storedTask.setDescr(editDetailsDescr.getText().toString());
             storedTask.setRemind(checkRemind.isChecked());
             storedTask.setTime(remindTime.getText().toString());
+            TaskGroup group = groups.get(spinnerGroup.getSelectedItemPosition());
+            storedTask.setTaskGroupId(group.getId());
 
             if (oldTaskItem != null) {
                 storedTask.setId(oldTaskItem.getId());
@@ -226,5 +310,14 @@ public class TaskDetailsActivity extends AppCompatActivity {
     private void setInitialDateTime() {
         if (oldTaskItem != null && oldTaskItem.getTime() != null)
             remindTime.setText(oldTaskItem.getTime());
+    }
+
+    public void doPositiveClick(String name) {
+        currentGroup = new TaskGroup(name);
+        currentGroup.setId(App.db().taskGroups().insert(currentGroup));
+        groups.add(currentGroup);
+        if (oldTaskItem != null)
+            oldTaskItem.setTaskGroupId(currentGroup.getId());
+        setSpinner();
     }
 }
