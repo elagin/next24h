@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,12 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
     @BindView(R.id.workLayout)
     CoordinatorLayout workTable;
 
+    @BindView(R.id.taskRecyclerView)
+    RecyclerView taskRecyclerView;
+
+    @BindView(R.id.textEmptyTask)
+    TextView textEmptyTask;
+
     List<TaskGroup> groups = new ArrayList<>();
 
     private boolean isVisibleGroup(Long id) {
@@ -47,18 +55,30 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
     }
 
     private void reloadItems() {
-        TasksAdapter adapter = (TasksAdapter) ((RecyclerView) workTable.findViewById(R.id.taskRecyclerView)).getAdapter();
+        List<TaskItem> totalItems = db().tasks().getTasks();
+        List<TaskItem> showItems = new ArrayList<>();
+
+        TasksAdapter adapter = (TasksAdapter) taskRecyclerView.getAdapter();
         if (Objects.requireNonNull(adapter).getItemCount() > 0) {
             adapter.clearItems();
         }
+        if (totalItems.size() > 0) {
 
-        List<TaskItem> totalItems = db().tasks().getTasks();
-        List<TaskItem> showItems = new ArrayList<>();
-        for (TaskItem item : totalItems) {
-            if (isVisibleGroup(item.getTaskGroupId()))
-                showItems.add(item);
+            for (TaskItem item : totalItems) {
+                if (isVisibleGroup(item.getTaskGroupId()))
+                    showItems.add(item);
+            }
+            adapter.setItems(showItems);
         }
-        adapter.setItems(showItems);
+
+        if (showItems.isEmpty()) {
+            textEmptyTask.setVisibility(View.VISIBLE);
+            taskRecyclerView.setVisibility(View.GONE);
+        } else {
+            textEmptyTask.setVisibility(View.GONE);
+            taskRecyclerView.setVisibility(View.VISIBLE);
+        }
+
         adapter.notifyDataSetChanged();
     }
 

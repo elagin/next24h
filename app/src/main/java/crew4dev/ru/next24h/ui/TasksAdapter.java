@@ -58,7 +58,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
             holder.taskTitle.setTextColor(Color.rgb(100, 100, 100));
             holder.taskDescr.setVisibility(View.GONE);
         } else {
-            holder.taskTitle.setTextColor(Color.rgb(0, 00, 0));
+            holder.taskTitle.setTextColor(Color.rgb(0, 0, 0));
             holder.taskDescr.setVisibility(View.VISIBLE);
         }
         holder.cbSelect.setChecked(item.isComplete());
