@@ -8,4 +8,5 @@
     <string name="add_task">Добавить</string>
     <string name="time">time</string>
     <string name="cancel">Отмена</string>
+    <string name="enable_all">Включить все и закрыть</string>
 </resources>

@@ -28,7 +28,7 @@ public class NotificationUtils {
         this.context = context;
         manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //notifications = new HashMap<Integer, Notification>();
-        notifications = new HashMap<String, Integer>();
+        notifications = new HashMap<>();
     }
 
     /**

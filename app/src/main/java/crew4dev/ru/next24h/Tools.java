@@ -7,7 +7,7 @@ import crew4dev.ru.next24h.data.TaskGroup;
 public class Tools {
     public static CharSequence[] toCharSequenceArray(List<TaskGroup> groups) {
         if (android.os.Build.VERSION.SDK_INT >= 24) {
-            return groups.stream().map(b -> b.getName()).toArray(CharSequence[]::new);
+            return groups.stream().map(TaskGroup::getName).toArray(CharSequence[]::new);
         } else {
             CharSequence[] bookTitles = new CharSequence[groups.size()];
             int index = 0;

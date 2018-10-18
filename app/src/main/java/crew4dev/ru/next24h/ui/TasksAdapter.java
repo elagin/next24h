@@ -30,12 +30,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
     private final List<TaskItem> taskList = new ArrayList<>();
     private final Context context;
     private OnTaskListClickListener listener;
-    private final OnViewHolderClickListener holderClickListener = new OnViewHolderClickListener() {
-        @Override
-        public void OnViewHolderClick(int current) {
-            setSelectedPos(current);
-        }
-    };
+    private final OnViewHolderClickListener holderClickListener = current -> setSelectedPos(current);
 
     public TasksAdapter(Context context) {
         this.context = context;
@@ -67,23 +62,20 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
             holder.taskDescr.setVisibility(View.VISIBLE);
         }
         holder.cbSelect.setChecked(item.isComplete());
-        holder.cbSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.cbSelect.isChecked()) {
-                    item.setComplete(true);
-                    if (item.isRemind()) {
-                        RemindManager.cancelNotify(context, item.getId());
-                        item.setRemind(false);
-                    }
-                } else {
-                    item.setComplete(false);
+        holder.cbSelect.setOnClickListener(v -> {
+            if (holder.cbSelect.isChecked()) {
+                item.setComplete(true);
+                if (item.isRemind()) {
+                    RemindManager.cancelNotify(context, item.getId());
+                    item.setRemind(false);
                 }
-                Collections.sort(taskList);
-                //item.setComplete(!item.isComplete());
-                notifyDataSetChanged();
-                App.db().tasks().update(item);
+            } else {
+                item.setComplete(false);
             }
+            Collections.sort(taskList);
+            //item.setComplete(!item.isComplete());
+            notifyDataSetChanged();
+            App.db().tasks().update(item);
         });
     }
 
@@ -170,14 +162,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         private final CheckBox cbSelect;
         private final ImageView timeImage;
 
-        private final MenuItem.OnMenuItemClickListener onEditMenu = new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
+        private final MenuItem.OnMenuItemClickListener onEditMenu = menuItem -> {
 //                DBHandler dbHandler = new DBHandler(ctx);
 //                List<WishMen> data = dbHandler.getWishmen();
-                if (menuItem.getTitle().equals("Delete")) {
-                    removeAt(getAdapterPosition());
-                }
+            if (menuItem.getTitle().equals("Delete")) {
+                removeAt(getAdapterPosition());
+            }
 //                switch (menuItem.getItemId()) {
 //                    case 0:
 //                        //getAdapterPosition();
@@ -185,8 +175,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
 //                        //Do stuff
 //                        break;
 //                }
-                return true;
-            }
+            return true;
         };
 
 
@@ -234,20 +223,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
             this.cbSelect = itemView.findViewById(R.id.checkBox);
             this.timeImage = itemView.findViewById(R.id.timeImage);
             item = itemView;
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    clickListener.OnViewHolderClick(getAdapterPosition());
-                }
-            });
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    //int  choosedId1 = product.getId();
-                    //Toast.makeText(getApplicationContext(),id,Toast.LENGTH_LONG).show();
-                    return false;
+            itemView.setOnClickListener(view -> clickListener.OnViewHolderClick(getAdapterPosition()));
+            itemView.setOnLongClickListener(v -> {
+                //int  choosedId1 = product.getId();
+                //Toast.makeText(getApplicationContext(),id,Toast.LENGTH_LONG).show();
+                return false;
 
-                }
             });
         }
 

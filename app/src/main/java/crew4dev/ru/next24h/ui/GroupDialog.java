@@ -1,7 +1,6 @@
 package crew4dev.ru.next24h.ui;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -50,38 +49,22 @@ public class GroupDialog extends DialogFragment {
             AlertDialog.Builder ad = new AlertDialog.Builder(context);
             final List<Integer> mSelectedItems = new ArrayList<>();
             ad.setTitle(ARG_TITLE)
-                    .setMultiChoiceItems(charSequences, checkedItems,
-                            new DialogInterface.OnMultiChoiceClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which,
-                                                    boolean isChecked) {
+                    .setMultiChoiceItems(charSequences, checkedItems, (dialog, which, isChecked) -> {
 //                                    if (isChecked) {
 //                                        mSelectedItems.add(which);
 //                                    } else if (mSelectedItems.contains(which)) {
 //                                        mSelectedItems.remove(Integer.valueOf(which));
 //                                    }
-                                }
-                            });
-            ad.setPositiveButton(R.string.ok,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            ((MainActivity) context)
-                                    .doPositiveClick(checkedItems);
-                        }
                     });
-            ad.setNegativeButton(R.string.cancel,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        }
-                    });
-//            ad.setNeutralButton("Вкл. все", new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int id) {
-//                    for (int i = 0; i < checkedItems.length; i++) {
-//                        checkedItems[i] = true;
-//                    }
-//                    //LoginDialogFragment.this.getDialog().cancel();
-//                }
-//            });
+            ad.setPositiveButton(R.string.ok, (dialog, whichButton) -> ((MainActivity) context).doPositiveClick(checkedItems));
+            ad.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {
+            });
+            ad.setNeutralButton(R.string.enable_all, (dialog, id) -> {
+                for (int i = 0; i < checkedItems.length; i++) {
+                    checkedItems[i] = true;
+                }
+                ((MainActivity) context).doPositiveClick(checkedItems);
+            });
             ad.setCancelable(true);
             try {
                 dialog = ad.show();
@@ -98,17 +81,9 @@ public class GroupDialog extends DialogFragment {
         AutoCompleteTextView groupname = main.findViewById(R.id.groupname);
 
         builder.setView(main)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        ((TaskDetailsActivity) context)
-                                .doPositiveClick(groupname.getText().toString());
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //LoginDialogFragment.this.getDialog().cancel();
-                    }
+                .setPositiveButton(R.string.ok, (dialog, id) -> ((TaskDetailsActivity) context)
+                        .doPositiveClick(groupname.getText().toString()))
+                .setNegativeButton(R.string.cancel, (dialog, id) -> {
                 });
 
         if (!oldName.isEmpty())

@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -118,19 +117,16 @@ public class TaskDetailsActivity extends AppCompatActivity {
             }
         });
 
-        checkRemind.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkRemind.isChecked()) {
-                    remindTime.setEnabled(true);
-                    timeButton.setEnabled(true);
-                    if (remindTime.getText().length() == 0) {
-                        setTime(checkRemind);
-                    }
-                } else {
-                    remindTime.setEnabled(false);
-                    timeButton.setEnabled(false);
+        checkRemind.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (checkRemind.isChecked()) {
+                remindTime.setEnabled(true);
+                timeButton.setEnabled(true);
+                if (remindTime.getText().length() == 0) {
+                    setTime(checkRemind);
                 }
+            } else {
+                remindTime.setEnabled(false);
+                timeButton.setEnabled(false);
             }
         });
         setInitialDateTime();
@@ -195,10 +191,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
     }
 
     private void createNewGroup() {
-        showNewGroupName(this, "", new OnSelectClickListener() {
-            @Override
-            public void OnSelectClick(int searchItem) {}
-        });
+        showNewGroupName(this, "", searchItem -> {});
     }
 
     @Override

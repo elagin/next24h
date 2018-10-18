@@ -142,12 +142,7 @@ public class MainActivity extends AppCompatActivity implements OnTaskListClickLi
 
                 //groups.add("Автозапчасти");
                 //groups.add("Магазин");
-                GroupDialog.showSelectGroups(this, groups, new OnSelectClickListener() {
-                    @Override
-                    public void OnSelectClick(int searchItem) {
-
-                    }
-                });
+                GroupDialog.showSelectGroups(this, groups, searchItem -> {});
                 break;
         }
         if (id == R.id.action_settings) {
