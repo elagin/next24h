@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import crew4dev.ru.next24h.data.LocalDatabase;
+import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.data.TaskItem;
 import crew4dev.ru.next24h.db.interfaces.CollectDbApiContract;
 import io.reactivex.Completable;
@@ -57,5 +58,22 @@ public class CollectDbApiImp implements CollectDbApiContract {
                 emitter.onError(e);
             }
         });
+    }
+
+    @Override
+    public Completable update(TaskGroup group) {
+        return Completable.create(emitter -> {
+            try {
+                collectDatabase.collectDao().update(group);
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+
+    @Override
+    public Single<List<TaskGroup>> getGroups() {
+        return collectDatabase.collectDao().getGroups();
     }
 }

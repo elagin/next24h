@@ -44,7 +44,7 @@ public class App extends Application {
                 .addMigrations(MIGRATION_2_3)
                 .addMigrations(MIGRATION_3_4)
                 .build();
-        if (App.db().collectDao().getGroups().size() == 0) {
+        if (App.db().collectDao().groupCount() == 0) {
             TaskGroup firstGroup = new TaskGroup();
             firstGroup.setVisible(true);
             firstGroup.setName("Общее");

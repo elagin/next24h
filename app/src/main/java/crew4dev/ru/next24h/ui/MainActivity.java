@@ -33,7 +33,6 @@ import crew4dev.ru.next24h.ui.interfaces.MainActivityContract;
 public class MainActivity extends AppCompatActivity implements MainActivityContract, OnTaskListClickListener {
 
     private static final String TAG = "MainActivity";
-    //private boolean isHideCompletedTask = false;
 
     @BindView(R.id.workLayout)
     CoordinatorLayout workTable;
@@ -96,10 +95,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     }
 
     @Override
+    public void reloadGroups(List<TaskGroup> groups) {
+        this.groups = groups;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        groups = App.db().collectDao().getGroups();
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -140,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         if (id == R.id.action_settings) {
             return true;
         } else
-        return super.onOptionsItemSelected(item);
+            return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -158,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
                 group.setVisible(true);
             else
                 group.setVisible(false);
-            App.db().collectDao().update(group);
+            mainController.updateGroup(group);
         }
         mainController.getTaskList();
     }

@@ -130,12 +130,12 @@ public class TaskDetailsActivity extends AppCompatActivity {
             }
         });
         setInitialDateTime();
-        groups = App.db().collectDao().getGroups();
+        //groups = App.db().collectDao().getGroups();
         setSpinner();
         spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (position == App.db().collectDao().getGroups().size()) {
+                if (position == App.db().collectDao().groupCount()) {
                     createNewGroup();
                 }
                 Log.d(TAG, "onItemSelected: " + position);

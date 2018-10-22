@@ -5,6 +5,7 @@ import android.arch.lifecycle.LifecycleOwner;
 import javax.inject.Inject;
 
 import crew4dev.ru.next24h.SharedPrefApi;
+import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.ui.controllers.interfaces.MainControllerContract;
 import crew4dev.ru.next24h.ui.interfaces.MainActivityContract;
 import crew4dev.ru.next24h.ui.models.MainModel;
@@ -25,10 +26,22 @@ public class MainControllerImp extends DefaultControllerImp implements MainContr
     public void subscribeToModel() {
         super.subscribeToModel();
         model.reloadTaskList();
+        model.reloadGroupList();
         model.getTasks().observe(lifecycleOwner, activity::reloadItems);
+        model.getGroups().observe(lifecycleOwner, activity::reloadGroups);
     }
 
     public void getTaskList() {
         model.reloadTaskList();
+    }
+
+    @Override
+    public void updateGroup(TaskGroup group) {
+        model.updateGroup(group);
+    }
+
+    @Override
+    public void getGroups() {
+        model.reloadGroupList();
     }
 }

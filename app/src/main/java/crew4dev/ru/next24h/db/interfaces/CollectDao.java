@@ -42,5 +42,8 @@ public abstract class CollectDao {
     public abstract void delete(TaskGroup item);
 
     @Query("select * from taskGroups")
-    public abstract List<TaskGroup> getGroups();
+    public abstract Single<List<TaskGroup>> getGroups();
+
+    @Query("select count(*) from taskGroups")
+    public abstract Integer groupCount();
 }
