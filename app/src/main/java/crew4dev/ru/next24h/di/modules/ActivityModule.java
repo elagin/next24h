@@ -3,6 +3,7 @@ package crew4dev.ru.next24h.di.modules;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.ViewModelProviders;
 
+import crew4dev.ru.next24h.db.interfaces.CollectDbApiContract;
 import crew4dev.ru.next24h.di.components.ControllerScope;
 import crew4dev.ru.next24h.ui.MainActivity;
 import crew4dev.ru.next24h.ui.interfaces.MainActivityContract;
@@ -35,7 +36,7 @@ public class ActivityModule {
 
     @Provides
     @ControllerScope
-    public MainModel provideMainModel(/*CollectDbApiContract collectDbApi*/) {
-        return ViewModelProviders.of(mainActivity, new CollectApiModelFactory(/*collectApi, collectDbApi*/)).get(MainModel.class);
+    public MainModel provideMainModel(CollectDbApiContract collectDbApi) {
+        return ViewModelProviders.of(mainActivity, new CollectApiModelFactory(collectDbApi)).get(MainModel.class);
     }
 }

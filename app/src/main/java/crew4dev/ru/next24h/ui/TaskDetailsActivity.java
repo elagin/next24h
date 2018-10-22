@@ -87,7 +87,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         if (getIntent().getExtras() != null && getIntent().getExtras().get(Constants.ID_PARAM) != null) {
             Long taskId = getIntent().getLongExtra(Constants.ID_PARAM, 0);
-            oldTaskItem = App.db().tasks().getById(taskId);
+            oldTaskItem = App.db().collectDao().getById(taskId);
             if (oldTaskItem == null) {
                 Toast.makeText(this, "Задача не найдена", Toast.LENGTH_SHORT).show();
             }
@@ -130,12 +130,12 @@ public class TaskDetailsActivity extends AppCompatActivity {
             }
         });
         setInitialDateTime();
-        groups = App.db().taskGroups().getGroups();
+        groups = App.db().collectDao().getGroups();
         setSpinner();
         spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (position == App.db().taskGroups().getGroups().size()) {
+                if (position == App.db().collectDao().getGroups().size()) {
                     createNewGroup();
                 }
                 Log.d(TAG, "onItemSelected: " + position);
@@ -145,7 +145,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parentView) {
                 Log.d(TAG, "onNothingSelected");
             }
-
         });
     }
 
@@ -211,9 +210,10 @@ public class TaskDetailsActivity extends AppCompatActivity {
                 if (!checkRemind.isChecked() && oldTaskItem.isRemind())
                     storedTask.clearRemindTime();
                     RemindManager.cancelNotify(this, oldTaskItem.getId());
-                App.db().tasks().update(storedTask);
+                App.db().collectDao().update(storedTask);
             } else
-                App.db().tasks().insert(storedTask);
+                App.db().collectDao().insert(storedTask);
+
             if (checkRemind.isChecked())
                 RemindManager.setNotify(this, storedTask);
             finish();
@@ -221,7 +221,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
             if (oldTaskItem != null) {
                 if (checkRemind.isChecked())
                     RemindManager.cancelNotify(this, oldTaskItem.getId());
-                App.db().tasks().delete(oldTaskItem);
+                App.db().collectDao().delete(oldTaskItem);
                 finish();
             }
         }
@@ -307,7 +307,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
     public void doPositiveClick(String name) {
         currentGroup = new TaskGroup(name);
-        currentGroup.setId(App.db().taskGroups().insert(currentGroup));
+        currentGroup.setId(App.db().collectDao().insert(currentGroup));
         groups.add(currentGroup);
         if (oldTaskItem != null)
             oldTaskItem.setTaskGroupId(currentGroup.getId());

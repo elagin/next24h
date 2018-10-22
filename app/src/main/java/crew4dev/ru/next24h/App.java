@@ -8,7 +8,9 @@ import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.di.components.DaggerUtilsComponent;
 import crew4dev.ru.next24h.di.components.UtilsComponent;
 import crew4dev.ru.next24h.di.modules.ContextModule;
+import crew4dev.ru.next24h.di.modules.RoomModule;
 
+import static crew4dev.ru.next24h.Constants.DbName;
 import static crew4dev.ru.next24h.data.LocalDatabase.MIGRATION_1_2;
 import static crew4dev.ru.next24h.data.LocalDatabase.MIGRATION_2_3;
 import static crew4dev.ru.next24h.data.LocalDatabase.MIGRATION_3_4;
@@ -35,18 +37,18 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        utilsComponent = DaggerUtilsComponent.builder()/*.roomModule(new RoomModule(DbName))*/.contextModule(new ContextModule(getApplicationContext())).build();
+        utilsComponent = DaggerUtilsComponent.builder().roomModule(new RoomModule(DbName)).contextModule(new ContextModule(getApplicationContext())).build();
         mDb = Room.databaseBuilder(this, LocalDatabase.class, "local_db")
                 .allowMainThreadQueries()
                 .addMigrations(MIGRATION_1_2)
                 .addMigrations(MIGRATION_2_3)
                 .addMigrations(MIGRATION_3_4)
                 .build();
-        if (App.db().taskGroups().getGroups().size() == 0) {
+        if (App.db().collectDao().getGroups().size() == 0) {
             TaskGroup firstGroup = new TaskGroup();
             firstGroup.setVisible(true);
             firstGroup.setName("Общее");
-            App.db().taskGroups().insert(firstGroup);
+            App.db().collectDao().insert(firstGroup);
         }
     }
 }

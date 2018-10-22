@@ -10,24 +10,25 @@ import crew4dev.ru.next24h.ui.interfaces.MainActivityContract;
 import crew4dev.ru.next24h.ui.models.MainModel;
 
 public class MainControllerImp extends DefaultControllerImp implements MainControllerContract {
-    private MainActivityContract mainActivity;
-    private MainModel mainModel;
+    private final MainActivityContract activity;
+    private final MainModel model;
 
     @Inject
-    public MainControllerImp(SharedPrefApi sharedPrefApi, MainActivityContract mainActivity, MainModel mainModel, LifecycleOwner lifecycleOwner) {
-        super(sharedPrefApi, mainActivity, mainModel, lifecycleOwner);
-        this.mainActivity = mainActivity;
-        this.mainModel = mainModel;
+    public MainControllerImp(SharedPrefApi sharedPrefApi, MainActivityContract mainActivity, MainModel model, LifecycleOwner lifecycleOwner) {
+        super(sharedPrefApi, mainActivity, model, lifecycleOwner);
+        this.activity = mainActivity;
+        this.model = model;
         subscribeToModel();
     }
 
     @Override
     public void subscribeToModel() {
-
+        super.subscribeToModel();
+        model.reloadTaskList();
+        model.getTasks().observe(lifecycleOwner, activity::reloadItems);
     }
 
-    @Override
-    public void loadUser() {
-
+    public void getTaskList() {
+        model.reloadTaskList();
     }
 }

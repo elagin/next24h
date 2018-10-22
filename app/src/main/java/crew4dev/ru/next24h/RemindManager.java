@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import java.util.Calendar;
-import java.util.List;
 
 import crew4dev.ru.next24h.data.TaskItem;
 
@@ -17,12 +16,16 @@ public class RemindManager {
     private static final String TAG = "TasksAdapter";
 
     public static void setAllNotifes(Context context) {
-        List<TaskItem> tasks = App.db().tasks().getTasks();
+        //List<TaskItem> tasks = App.db().tasks().getTasks();
+        //zz
+        /*
+        List<TaskItem> tasks = App.db().collectDao().getTasks();
         for (TaskItem item : tasks) {
             if (!item.isComplete() && item.isRemind() && item.getTime() != null) {
                 RemindManager.setNotify(context, item);
             }
         }
+        */
     }
 
     public static void setNotify(Context context, TaskItem item) {

@@ -30,7 +30,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
     private final List<TaskItem> taskList = new ArrayList<>();
     private final Context context;
     private OnTaskListClickListener listener;
-    private final OnViewHolderClickListener holderClickListener = current -> setSelectedPos(current);
+    private final OnViewHolderClickListener holderClickListener = this::setSelectedPos;
 
     public TasksAdapter(Context context) {
         this.context = context;
@@ -75,7 +75,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
             Collections.sort(taskList);
             //item.setComplete(!item.isComplete());
             notifyDataSetChanged();
-            App.db().tasks().update(item);
+            App.db().collectDao().update(item);
         });
     }
 
@@ -104,7 +104,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         if (!item.isComplete() && item.isRemind()) {
             RemindManager.cancelNotify(context, item.getId());
         }
-        App.db().tasks().delete(item);
+        App.db().collectDao().delete(item);
         taskList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, taskList.size());

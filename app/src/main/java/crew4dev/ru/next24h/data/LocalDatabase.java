@@ -5,9 +5,11 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.migration.Migration;
 
+import crew4dev.ru.next24h.db.interfaces.CollectDao;
+
 @Database(entities = {TaskItem.class, TaskGroup.class}, version = 4)
 public abstract class LocalDatabase extends RoomDatabase {
-    public abstract TaskDao tasks();
+    public abstract CollectDao collectDao();
 
     public static final Migration MIGRATION_3_4 = new Migration(3, 4) {
         @Override
@@ -32,7 +34,5 @@ public abstract class LocalDatabase extends RoomDatabase {
             database.execSQL("ALTER TABLE tasks ADD COLUMN minute INTEGER DEFAULT NULL");
         }
     };
-
-    public abstract TaskGroupDao taskGroups();
 }
 

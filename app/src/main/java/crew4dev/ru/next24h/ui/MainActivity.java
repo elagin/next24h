@@ -30,8 +30,6 @@ import crew4dev.ru.next24h.di.modules.ActivityModule;
 import crew4dev.ru.next24h.ui.controllers.interfaces.MainControllerContract;
 import crew4dev.ru.next24h.ui.interfaces.MainActivityContract;
 
-import static crew4dev.ru.next24h.App.db;
-
 public class MainActivity extends AppCompatActivity implements MainActivityContract, OnTaskListClickListener {
 
     private static final String TAG = "MainActivity";
@@ -69,8 +67,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         return true;
     }
 
-    private void reloadItems() {
-        List<TaskItem> totalItems = db().tasks().getTasks();
+    public void reloadItems(List<TaskItem> totalItems) {
         List<TaskItem> showItems = new ArrayList<>();
 
         TasksAdapter adapter = (TasksAdapter) taskRecyclerView.getAdapter();
@@ -102,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        groups = App.db().taskGroups().getGroups();
+        groups = App.db().collectDao().getGroups();
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -115,8 +112,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         TasksAdapter adapter = new TasksAdapter(this);
         adapter.setOnCollectGroupClickListener(this);
         recyclerView.setAdapter(adapter);
-
-        reloadItems();
     }
 
     @Override
@@ -136,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
                     item.setChecked(true);
                     sharedPrefApi.setHideCompletedTask(true);
                 }
-                reloadItems();
+                mainController.getTaskList();
                 break;
             case R.id.filter_group:
                 GroupDialog.showSelectGroups(this, groups, searchItem -> {});
@@ -147,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         } else
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public boolean OnTaskListClick(TaskItem task, int selectedPos) {
@@ -164,9 +158,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
                 group.setVisible(true);
             else
                 group.setVisible(false);
-            App.db().taskGroups().update(group);
+            App.db().collectDao().update(group);
         }
-        reloadItems();
+        mainController.getTaskList();
     }
 
     public MainControllerContract getMainController() {
