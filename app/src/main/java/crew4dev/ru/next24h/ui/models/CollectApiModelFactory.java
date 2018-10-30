@@ -19,6 +19,8 @@ public class CollectApiModelFactory extends ViewModelProvider.NewInstanceFactory
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass == MainModel.class) {
             return (T) new MainModel(collectDbApi);
+        } else if (modelClass == TaskDetailsModel.class) {
+            return (T) new TaskDetailsModel(collectDbApi);
         } else {
             return super.create(modelClass);
         }

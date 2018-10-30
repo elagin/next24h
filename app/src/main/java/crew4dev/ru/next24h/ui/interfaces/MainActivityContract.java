@@ -7,6 +7,5 @@ import crew4dev.ru.next24h.data.TaskItem;
 
 public interface MainActivityContract extends DefaultActivityContract {
     void reloadItems(List<TaskItem> tasks);
-
     void reloadGroups(List<TaskGroup> groups);
 }

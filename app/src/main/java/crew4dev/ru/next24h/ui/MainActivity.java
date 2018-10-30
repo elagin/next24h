@@ -33,6 +33,7 @@ import crew4dev.ru.next24h.ui.interfaces.MainActivityContract;
 public class MainActivity extends AppCompatActivity implements MainActivityContract, OnTaskListClickListener {
 
     private static final String TAG = "MainActivity";
+    private List<TaskGroup> groups = new ArrayList<>();
 
     @BindView(R.id.workLayout)
     CoordinatorLayout workTable;
@@ -48,8 +49,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     @Inject
     public MainControllerContract mainController;
-
-    List<TaskGroup> groups = new ArrayList<>();
 
     private boolean isVisibleGroup(Long id) {
         for (TaskGroup group : groups) {
@@ -68,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     public void reloadItems(List<TaskItem> totalItems) {
         List<TaskItem> showItems = new ArrayList<>();
-
         TasksAdapter adapter = (TasksAdapter) taskRecyclerView.getAdapter();
         if (Objects.requireNonNull(adapter).getItemCount() > 0) {
             adapter.clearItems();
@@ -82,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
             }
             adapter.setItems(showItems);
         }
-
         if (showItems.isEmpty()) {
             textEmptyTask.setVisibility(View.VISIBLE);
             taskRecyclerView.setVisibility(View.GONE);
@@ -90,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
             textEmptyTask.setVisibility(View.GONE);
             taskRecyclerView.setVisibility(View.VISIBLE);
         }
-
         adapter.notifyDataSetChanged();
     }
 

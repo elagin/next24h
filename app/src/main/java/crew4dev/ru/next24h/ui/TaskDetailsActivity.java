@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import crew4dev.ru.next24h.App;
@@ -31,12 +33,16 @@ import crew4dev.ru.next24h.R;
 import crew4dev.ru.next24h.RemindManager;
 import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.data.TaskItem;
+import crew4dev.ru.next24h.di.components.DaggerControllerComponent;
+import crew4dev.ru.next24h.di.modules.ActivityModule;
+import crew4dev.ru.next24h.ui.controllers.interfaces.TaskDetailsControllerContract;
+import crew4dev.ru.next24h.ui.interfaces.TaskDetailsActivityContract;
 
 import static crew4dev.ru.next24h.Constants.REMINDE_TIME_FORMAT;
 import static crew4dev.ru.next24h.Tools.toCharSequenceArray;
 import static crew4dev.ru.next24h.ui.GroupDialog.showNewGroupName;
 
-public class TaskDetailsActivity extends AppCompatActivity {
+public class TaskDetailsActivity extends AppCompatActivity implements TaskDetailsActivityContract {
 
     private static final String TAG = "TaskDetailsActivity";
 
@@ -54,10 +60,12 @@ public class TaskDetailsActivity extends AppCompatActivity {
     @BindView(R.id.spinnerGroup)
     Spinner spinnerGroup;
 
+    @Inject
+    TaskDetailsControllerContract contract;
+
     private TaskItem oldTaskItem;
     List<TaskGroup> groups = new ArrayList<>();
     private Menu menu;
-    private final int NOTIFICATION_REMINDER_NIGHT = 10;
     private TaskGroup currentGroup;
     private CharSequence[] charSequences;
 
@@ -85,6 +93,9 @@ public class TaskDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_details);
         ButterKnife.bind(this);
+
+        DaggerControllerComponent.builder().activityModule(new ActivityModule(this)).utilsComponent(App.getApplication().getUtilsComponent()).build().inject(this);
+
         if (getIntent().getExtras() != null && getIntent().getExtras().get(Constants.ID_PARAM) != null) {
             Long taskId = getIntent().getLongExtra(Constants.ID_PARAM, 0);
             oldTaskItem = App.db().collectDao().getById(taskId);
@@ -130,8 +141,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
             }
         });
         setInitialDateTime();
-        //groups = App.db().collectDao().getGroups();
-        setSpinner();
         spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -146,6 +155,12 @@ public class TaskDetailsActivity extends AppCompatActivity {
                 Log.d(TAG, "onNothingSelected");
             }
         });
+    }
+
+    @Override
+    public void reloadGroups(List<TaskGroup> groups) {
+        this.groups = groups;
+        setSpinner();
     }
 
     private int getGroupIndex(long groupId) {
@@ -183,7 +198,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
             //oldTaskItem.setTaskGroupId(currentGroup.getId());
             int index = getGroupIndex(currentGroup.getId());
             spinnerGroup.setSelection(index, false);
-
         } else {
             spinnerGroup.setSelection(0, false);
         }
@@ -204,16 +218,15 @@ public class TaskDetailsActivity extends AppCompatActivity {
             storedTask.setTime(remindTime.getText().toString());
             TaskGroup group = groups.get(spinnerGroup.getSelectedItemPosition());
             storedTask.setTaskGroupId(group.getId());
-
             if (oldTaskItem != null) {
                 storedTask.setId(oldTaskItem.getId());
-                if (!checkRemind.isChecked() && oldTaskItem.isRemind())
+                if (!checkRemind.isChecked() && oldTaskItem.isRemind()) {
                     storedTask.clearRemindTime();
                     RemindManager.cancelNotify(this, oldTaskItem.getId());
+                }
                 App.db().collectDao().update(storedTask);
             } else
                 App.db().collectDao().insert(storedTask);
-
             if (checkRemind.isChecked())
                 RemindManager.setNotify(this, storedTask);
             finish();
@@ -241,7 +254,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
 //        }
 //
 //    }
-
     /*
     public void sendNotification(String title, String body) {
         Intent i = new Intent(this, MainActivity.class);
@@ -312,5 +324,10 @@ public class TaskDetailsActivity extends AppCompatActivity {
         if (oldTaskItem != null)
             oldTaskItem.setTaskGroupId(currentGroup.getId());
         setSpinner();
+    }
+
+    @Override
+    public void closeActivity() {
+
     }
 }

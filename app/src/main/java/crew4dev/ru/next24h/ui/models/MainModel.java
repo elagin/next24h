@@ -22,10 +22,8 @@ public class MainModel extends DefaultModel {
     public SingleEventLiveData<List<TaskItem>> getTasks() { return tasksData; }
 
     private SingleEventLiveData<Boolean> taskGroupData = new SingleEventLiveData();
-    //public SingleEventLiveData<Boolean> getTaskGroupData() { return taskGroupData; }
 
     private SingleEventLiveData<List<TaskGroup>> groupsData = new SingleEventLiveData();
-
     public SingleEventLiveData<List<TaskGroup>> getGroups() { return groupsData; }
 
     public void reloadTaskList() {
