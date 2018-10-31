@@ -3,23 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="crew4dev.ru.next24h.ui.MainActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+            android:id="@+id/action_settings"
+            android:orderInCategory="100"
+            android:title="@string/action_settings"
+            app:showAsAction="never"/>
     <item
-        android:id="@+id/add_task"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/add_task"
-        app:showAsAction="always" />
+            android:id="@+id/add_task"
+            android:icon="@android:drawable/ic_menu_add"
+            android:title="@string/add_task"
+            app:showAsAction="always"/>
     <item
-        android:id="@+id/filter_group"
-        android:icon="@android:drawable/arrow_down_float"
-        android:title="@string/add_task"
-        app:showAsAction="always" />
+            android:id="@+id/filter_group"
+            android:icon="@android:drawable/arrow_down_float"
+            android:title="@string/add_task"
+            app:showAsAction="always"/>
     <item
-        android:id="@+id/hide_completed_task"
-        android:checkable="true"
-        android:title="@string/hide_completed_task"
-        app:showAsAction="never" />
+            android:id="@+id/hide_completed_task"
+            android:checkable="true"
+            android:orderInCategory="200"
+            android:title="@string/hide_completed_task"
+            app:showAsAction="never"/>
+    <item
+            android:id="@+id/delete_completed_task"
+            android:orderInCategory="300"
+            android:title="@string/delete_completed_task"
+            app:showAsAction="never"/>
 </menu>

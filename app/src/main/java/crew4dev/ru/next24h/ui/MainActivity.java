@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
             adapter.setItems(showItems);
         }
         if (showItems.isEmpty()) {
+            textEmptyTask.setText(getString(R.string.no_tasks));
             textEmptyTask.setVisibility(View.VISIBLE);
             taskRecyclerView.setVisibility(View.GONE);
         } else {
@@ -131,6 +132,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
                 break;
             case R.id.filter_group:
                 GroupDialog.showSelectGroups(this, groups, searchItem -> {});
+                break;
+            case R.id.delete_completed_task:
+                mainController.deleteCompleteTask();
                 break;
         }
         if (id == R.id.action_settings) {

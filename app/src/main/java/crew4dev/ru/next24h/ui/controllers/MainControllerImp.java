@@ -45,4 +45,9 @@ public class MainControllerImp extends DefaultControllerImp implements MainContr
     public void getGroups() {
         model.reloadGroupList();
     }
+
+    @Override
+    public void deleteCompleteTask() {
+        model.deleteCompeteTasks();
+    }
 }

@@ -13,11 +13,11 @@
         android:layout_height="match_parent" />
 
     <TextView
-        android:id="@+id/textEmptyTask"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="@string/no_tasks"
-        android:textStyle="bold" />
+            android:id="@+id/textEmptyTask"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/load_tasks"
+            android:textStyle="bold" />
 
 </android.support.design.widget.CoordinatorLayout>

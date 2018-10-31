@@ -6,4 +6,6 @@ public interface MainControllerContract {
     void getTaskList();
     void updateGroup(TaskGroup group);
     void getGroups();
+
+    void deleteCompleteTask();
 }

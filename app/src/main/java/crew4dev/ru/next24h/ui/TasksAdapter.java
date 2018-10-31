@@ -4,24 +4,19 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import crew4dev.ru.next24h.App;
+import crew4dev.ru.next24h.R;
+import crew4dev.ru.next24h.RemindManager;
+import crew4dev.ru.next24h.data.TaskItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import crew4dev.ru.next24h.App;
-import crew4dev.ru.next24h.R;
-import crew4dev.ru.next24h.RemindManager;
-import crew4dev.ru.next24h.data.TaskItem;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHolder> {
 
@@ -165,7 +160,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
         private final MenuItem.OnMenuItemClickListener onEditMenu = menuItem -> {
 //                DBHandler dbHandler = new DBHandler(ctx);
 //                List<WishMen> data = dbHandler.getWishmen();
-            if (menuItem.getTitle().equals("Delete")) {
+            if (menuItem.getTitle().equals(context.getResources().getString(R.string.delete))) {
                 removeAt(getAdapterPosition());
             }
 //                switch (menuItem.getItemId()) {
@@ -177,7 +172,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
 //                }
             return true;
         };
-
 
         void bind(TaskItem item) {
             taskTitle.setText(item.getTitle());
@@ -234,7 +228,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TasksViewHol
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            MenuItem Delete = menu.add(this.getAdapterPosition(), v.getId(), 0, "Delete");
+            MenuItem Delete = menu.add(this.getAdapterPosition(), v.getId(), 0, R.string.delete);
             //MenuItem Edit = menu.add(Menu.NONE, 1, 1, "Edit");
             //MenuItem Delete = menu.add(Menu.NONE, 2, 2, "Delete");
             //Edit.setOnMenuItemClickListener(onEditMenu);

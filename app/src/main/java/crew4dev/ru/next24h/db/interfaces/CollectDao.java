@@ -1,16 +1,11 @@
 package crew4dev.ru.next24h.db.interfaces;
 
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Update;
-
-import java.util.List;
-
+import android.arch.persistence.room.*;
 import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.data.TaskItem;
 import io.reactivex.Single;
+
+import java.util.List;
 
 @Dao
 public abstract class CollectDao {
@@ -29,6 +24,9 @@ public abstract class CollectDao {
 
     @Delete
     public abstract void delete(TaskItem item);
+
+    @Query("DELETE from tasks where isComplete = 1")
+    public abstract void deleteComplete();
 
     //==========
 

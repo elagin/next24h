@@ -1,15 +1,14 @@
 package crew4dev.ru.next24h.db;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import crew4dev.ru.next24h.data.LocalDatabase;
 import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.data.TaskItem;
 import crew4dev.ru.next24h.db.interfaces.CollectDbApiContract;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+
+import javax.inject.Inject;
+import java.util.List;
 
 public class CollectDbApiImp implements CollectDbApiContract {
     private LocalDatabase collectDatabase;
@@ -41,6 +40,18 @@ public class CollectDbApiImp implements CollectDbApiContract {
         return Completable.create(emitter -> {
             try {
                 collectDatabase.collectDao().delete(item);
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+
+    @Override
+    public Completable deleteComplete() {
+        return Completable.create(emitter -> {
+            try {
+                collectDatabase.collectDao().deleteComplete();
                 emitter.onComplete();
             } catch (Exception e) {
                 emitter.onError(e);
