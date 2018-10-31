@@ -1,6 +1,7 @@
 package crew4dev.ru.next24h.ui;
 
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -9,22 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.inject.Inject;
-
+import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import crew4dev.ru.next24h.App;
@@ -37,6 +23,11 @@ import crew4dev.ru.next24h.di.components.DaggerControllerComponent;
 import crew4dev.ru.next24h.di.modules.ActivityModule;
 import crew4dev.ru.next24h.ui.controllers.interfaces.TaskDetailsControllerContract;
 import crew4dev.ru.next24h.ui.interfaces.TaskDetailsActivityContract;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import static crew4dev.ru.next24h.Constants.REMINDE_TIME_FORMAT;
 import static crew4dev.ru.next24h.Tools.toCharSequenceArray;
@@ -56,7 +47,6 @@ public class TaskDetailsActivity extends AppCompatActivity implements TaskDetail
     CheckBox checkRemind;
     @BindView(R.id.timeButton)
     ImageButton timeButton;
-
     @BindView(R.id.spinnerGroup)
     Spinner spinnerGroup;
 
@@ -80,7 +70,6 @@ public class TaskDetailsActivity extends AppCompatActivity implements TaskDetail
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_task_details, menu);
         this.menu = menu;
-
         if (oldTaskItem == null) {
             menu.findItem(R.id.task_delete).setVisible(false);
         }
@@ -225,10 +214,13 @@ public class TaskDetailsActivity extends AppCompatActivity implements TaskDetail
                     RemindManager.cancelNotify(this, oldTaskItem.getId());
                 }
                 App.db().collectDao().update(storedTask);
-            } else
+            } else {
                 App.db().collectDao().insert(storedTask);
+            }
             if (checkRemind.isChecked())
                 RemindManager.setNotify(this, storedTask);
+            //intent.putExtra(Constants.DATA_IS_CHANGED, 1);
+            startActivityForResult(new Intent(this, MainActivity.class), 1);
             finish();
         } else if (id == R.id.task_delete) {
             if (oldTaskItem != null) {

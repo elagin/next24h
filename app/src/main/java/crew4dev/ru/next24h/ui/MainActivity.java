@@ -10,13 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import crew4dev.ru.next24h.App;
@@ -29,6 +22,11 @@ import crew4dev.ru.next24h.di.components.DaggerControllerComponent;
 import crew4dev.ru.next24h.di.modules.ActivityModule;
 import crew4dev.ru.next24h.ui.controllers.interfaces.MainControllerContract;
 import crew4dev.ru.next24h.ui.interfaces.MainActivityContract;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements MainActivityContract, OnTaskListClickListener {
 
@@ -169,4 +167,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     public void closeActivity() {
 
     }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (data == null){
+//            return;
+//        }
+//        String name = data.getStringExtra("name");
+//        //tvName.setText("Your name is " + name);
+//    }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (getIntent().getExtras() != null && getIntent().getExtras().get(Constants.DATA_IS_CHANGED) != null) {
+//            mainController.getTaskList();
+//        }
+//    }
 }

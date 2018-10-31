@@ -1,7 +1,6 @@
 package crew4dev.ru.next24h.ui.controllers;
 
 import android.arch.lifecycle.LifecycleOwner;
-
 import crew4dev.ru.next24h.SharedPrefApi;
 import crew4dev.ru.next24h.ui.controllers.interfaces.DefaultControllerContract;
 import crew4dev.ru.next24h.ui.interfaces.DefaultActivityContract;
@@ -18,7 +17,6 @@ public class DefaultControllerImp implements DefaultControllerContract {
         this.lifecycleOwner = lifecycleOwner;
         this.defaultActivity = defaultActivity;
         this.defaultModel = defaultModel;
-
     }
 
     @Override

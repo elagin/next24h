@@ -11,6 +11,5 @@ import dagger.Component;
 @Component(dependencies = UtilsComponent.class, modules = {ControllerModule.class, ActivityModule.class, ApiDbModule.class})
 public interface ControllerComponent {
     void inject(MainActivity mainActivity);
-
     void inject(TaskDetailsActivity taskDetailsActivity);
 }
