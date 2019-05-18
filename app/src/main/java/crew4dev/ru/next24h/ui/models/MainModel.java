@@ -1,5 +1,7 @@
 package crew4dev.ru.next24h.ui.models;
 
+import java.util.List;
+
 import crew4dev.ru.next24h.SingleEventLiveData;
 import crew4dev.ru.next24h.data.TaskGroup;
 import crew4dev.ru.next24h.data.TaskItem;
@@ -9,8 +11,6 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
-import java.util.List;
 
 public class MainModel extends DefaultModel {
 
@@ -38,7 +38,7 @@ public class MainModel extends DefaultModel {
 
             @Override
             public void onError(Throwable e) {
-                groupsData.postValue(null);
+                tasksData.postValue(null);
             }
         });
     }

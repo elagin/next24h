@@ -1,8 +1,8 @@
 package crew4dev.ru.next24h.ui;
 
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.Context;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +23,6 @@ public class GroupDialog extends DialogFragment {
     private static final String ARG_TITLE = "Отображать катерогии";
     private static CharSequence[] charSequences;
     private static AlertDialog dialog;
-
-    //List<Integer> mSelectedItems = new ArrayList<>();
     private static boolean[] checkedItems;
 
     public GroupDialog() {}

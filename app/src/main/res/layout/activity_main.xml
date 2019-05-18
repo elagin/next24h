@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/workLayout"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/workLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#f0fdf0"
     tools:context=".ui.MainActivity">
 
@@ -13,11 +13,11 @@
         android:layout_height="match_parent" />
 
     <TextView
-            android:id="@+id/textEmptyTask"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="@string/load_tasks"
-            android:textStyle="bold" />
+        android:id="@+id/textEmptyTask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/load_tasks"
+        android:textStyle="bold" />
 
 </android.support.design.widget.CoordinatorLayout>
