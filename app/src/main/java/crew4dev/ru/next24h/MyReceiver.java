@@ -23,7 +23,7 @@ public class MyReceiver extends BroadcastReceiver {
         String title = null;
         String desc = null;
         if (intent.getExtras() != null && intent.getExtras().get(TASK_TITLE) != null) {
-            //Log.d(TAG, "onReceive: " + title);
+            Log.d(TAG, "onReceive: " + title);
             title = intent.getStringExtra(TASK_TITLE);
             if (intent.getExtras().get(TASK_DESC) != null)
                 desc = intent.getStringExtra(TASK_DESC);

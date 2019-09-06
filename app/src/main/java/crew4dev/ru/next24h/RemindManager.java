@@ -39,8 +39,9 @@ public class RemindManager {
             if (data.length == 2) {
                 hours = Integer.valueOf(data[0]);
                 minutes = Integer.valueOf(data[1]);
-                taskTime.set(Calendar.HOUR, hours);
+                taskTime.set(Calendar.HOUR_OF_DAY, hours);
                 taskTime.set(Calendar.MINUTE, minutes);
+                //todo Надо ли taskTime.set(Calendar.SECOND, 0);
                 if (taskTime.after(how)) {
                     Log.d(TAG, item.getTitle() + " cегодня в " + String.format("%1$tA %1$tb %1$td %1$tY at %1$tI:%1$tM %1$Tp", taskTime));
                 } else {
